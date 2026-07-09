@@ -1,0 +1,12 @@
+{
+  "block.sizeable_foliage.big_bush": "Big Bush",
+  "block.sizeable_foliage.big_bush_part": "Big Bush",
+  "block.sizeable_foliage.torchflower_bush": "Torchflower Bush",
+  "block.sizeable_foliage.very_short_grass": "Very Short Grass",
+  "block.sizeable_foliage.very_tall_grass": "Very Tall Grass",
+  "item.sizeable_foliage.big_bush": "Big Bush",
+  "item.sizeable_foliage.big_bush.tooltip": "Can be bonemealed",
+  "item.sizeable_foliage.torchflower_bush": "Torchflower Bush",
+  "item.sizeable_foliage.very_short_grass": "Very Short Grass",
+  "item.sizeable_foliage.very_tall_grass": "Very Tall Grass"
+}

@@ -1,0 +1,152 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+group = findProperty('mod_group_id') ?: 'com.craisinlord.sizeablefoliage'
+version = findProperty('mod_version') ?: '1.0.0'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+}
+
+base {
+    archivesName = "${mod_id}-forge-1.20.1"
+}
+
+// Handle duplicates from common module in all copy tasks
+tasks.withType(AbstractCopyTask).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+minecraft {
+    mappings channel: 'parchment', version: parchment_version
+
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            jvmArgs(
+                "-Dmixin.env.remapRefMap=true",
+                "-Dmixin.env.refMapRemappingFile=${projectDir}/build/createSrgToMcp/output.srg"
+            )
+        }
+
+        server {
+            args '--nogui'
+        }
+    }
+}
+
+// Add common-1.20.1 sources directly. Path is relative because forge-1.20.1 is its
+// own Gradle build (ForgeGradle 6 can't run on the root's Gradle 9 wrapper) —
+// there is no `:common-1.20.1` project here.
+sourceSets {
+    main {
+        java {
+            srcDirs += file('../common-1.20.1/src/main/java')
+        }
+        resources {
+            srcDirs += file('../common-1.20.1/src/main/resources')
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}-forge.mixins.refmap.json"
+    config "${mod_id}-forge.mixins.json"
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+        version                : project.version,
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: "[${minecraft_version}]",
+        forge_version          : forge_version,
+        forge_version_range    : forge_version_range,
+        loader_version_range   : loader_version_range,
+        mod_id                 : mod_id,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_authors            : mod_authors,
+        mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching('META-INF/mods.toml') {
+        expand replaceProperties
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+            'MixinConfigs': "${mod_id}-forge.mixins.json"
+        ])
+    }
+
+    finalizedBy 'reobfJar'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            groupId = project.group
+            artifactId = project.base.archivesName.get()
+            version = project.version
+
+            // jar is finalized by reobfJar, so this publishes the reobfuscated (SRG-mapped) jar.
+            // Consumers depending on this artifact must wrap it with fg.deobf() in ForgeGradle.
+            artifact jar
+            artifact sourcesJar
+
+            pom {
+                name = "${mod_name} (Forge 1.20.1)"
+                description = mod_description
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'LocalMaven'
+            url = findProperty('mavenRepoPath') ? uri(findProperty('mavenRepoPath')) : uri(new File(layout.buildDirectory.get().asFile, 'maven-repo'))
+        }
+        maven {
+            name = 'Forgejo'
+            url = uri('https://maven.tysontheember.dev')
+            credentials {
+                username = findProperty('forgejoActor') ?: System.getenv('FORGEJO_ACTOR')
+                password = findProperty('forgejoToken') ?: System.getenv('FORGEJO_TOKEN')
+            }
+        }
+    }
+}

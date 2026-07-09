@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.craisinlord.sizeablefoliage.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "sizeable_foliage.mixins.refmap.json",
+  "mixins": [
+    "BoneMealItemVeryTallGrassMixin",
+    "BoneMealItemTorchflowerBushMixin"
+  ],
+  "client": [
+    "client.BlockRenderDispatcherBigBushMixin",
+    "client.LivingEntityRendererBigBushMixin",
+    "client.GameRendererSwingThroughGrassMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

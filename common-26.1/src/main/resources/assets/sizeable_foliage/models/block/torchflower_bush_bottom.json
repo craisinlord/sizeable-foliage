@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "sizeable_foliage:block/torchflower_bush_bottom"
+  }
+}

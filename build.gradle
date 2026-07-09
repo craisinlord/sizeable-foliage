@@ -1,0 +1,56 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    // Applied at root to prevent conflict when multiple NeoForge subprojects
+    // each try to register the IntelliJ IDEA extension independently.
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.2' apply false
+}
+
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    group = findProperty('mod_group_id') ?: 'com.craisinlord.sizeablefoliage'
+    version = findProperty('mod_version') ?: '1.0.0'
+
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://maven.shedaniel.me/' }
+        maven { url = 'https://cursemaven.com' }
+        maven { url = 'https://api.modrinth.com/maven' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+
+    java {
+        withSourcesJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+}
+
+// Don't build root project
+tasks.named('jar') {
+    enabled = false
+}
+
+// Delegate forge-1.20.1 tasks to its own Gradle 8.8 wrapper. ForgeGradle 6 can't run
+// on Gradle 9 and includeBuild can't mix Gradle versions, so we shell out instead.
+def forge1201Dir = file('forge-1.20.1')
+def forge1201Wrapper = providers.systemProperty('os.name').get().toLowerCase().contains('win')
+        ? new File(forge1201Dir, 'gradlew.bat')
+        : new File(forge1201Dir, 'gradlew')
+
+['build', 'assemble', 'clean', 'runClient', 'runServer'].each { name ->
+    tasks.register("forge1201${name.capitalize()}", Exec) {
+        group = 'forge-1.20.1'
+        description = "Runs ':${name}' inside the forge-1.20.1 build"
+        workingDir = forge1201Dir
+        commandLine forge1201Wrapper.absolutePath, name
+    }
+}

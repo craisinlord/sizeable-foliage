@@ -1,0 +1,94 @@
+plugins {
+    // fabric-loom-remap (vs vanilla fabric-loom on fabric-26.1) — the standard plugin
+    // refuses to use Mojang mappings in a non-obfuscated environment, which this
+    // multi-loader workspace is. -remap relaxes that check.
+    id 'net.fabricmc.fabric-loom-remap' version '1.15.5'
+}
+
+base {
+    archivesName = "${mod_id}-fabric-1.21.1"
+}
+
+// Handle duplicates from common module
+tasks.withType(AbstractCopyTask).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+    withSourcesJar()
+}
+
+// Add common source sets directly
+sourceSets {
+    main {
+        java {
+            srcDirs project(':common-1.21.1').sourceSets.main.java.srcDirs
+        }
+        resources {
+            srcDir project(':common-1.21.1').sourceSets.main.resources.srcDirs
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.1"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version_1_21_1}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version_1_21_1}"
+}
+
+loom {
+    mixin.defaultRefmapName = "${mod_id}.mixins.refmap.json"
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+        version        : project.version,
+        mod_id         : mod_id,
+        mod_name       : mod_name,
+        mod_description: mod_description,
+        mod_license    : mod_license
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching('fabric.mod.json') {
+        expand replaceProperties
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = rootProject.group
+            artifactId = project.base.archivesName.get()
+            version = project.version
+
+            // Fabric Loom remaps the jar to obfuscated Minecraft names at runtime.
+            // remapJar is the distributable artifact; remapSourcesJar has the readable sources.
+            artifact(project.tasks.named('remapJar'))
+            artifact(project.tasks.named('remapSourcesJar')) {
+                classifier = 'sources'
+            }
+
+            pom {
+                name = "${mod_name} (Fabric 1.21.1)"
+                description = mod_description
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'LocalMaven'
+            url = findProperty('mavenRepoPath') ? uri(findProperty('mavenRepoPath')) : uri(new File(rootProject.layout.buildDirectory.get().asFile, 'maven-repo'))
+        }
+        maven {
+            name = 'Forgejo'
+            url = uri('https://maven.tysontheember.dev')
+            credentials {
+                username = findProperty('forgejoActor') ?: System.getenv('FORGEJO_ACTOR')
+                password = findProperty('forgejoToken') ?: System.getenv('FORGEJO_TOKEN')
+            }
+        }
+    }
+}

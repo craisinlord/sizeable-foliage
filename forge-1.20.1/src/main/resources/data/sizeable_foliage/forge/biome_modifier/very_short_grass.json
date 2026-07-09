@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#sizeable_foliage:very_short_grass_spawn_biomes",
+  "features": ["sizeable_foliage:very_short_grass"],
+  "step": "vegetal_decoration"
+}
