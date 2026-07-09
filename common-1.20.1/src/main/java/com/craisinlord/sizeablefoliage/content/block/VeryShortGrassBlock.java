@@ -40,5 +40,6 @@ public class VeryShortGrassBlock extends BushBlock implements BonemealableBlock 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
         level.setBlock(pos, Blocks.GRASS.defaultBlockState(), 3);
+        level.levelEvent(1505, pos, 15);
     }
 }

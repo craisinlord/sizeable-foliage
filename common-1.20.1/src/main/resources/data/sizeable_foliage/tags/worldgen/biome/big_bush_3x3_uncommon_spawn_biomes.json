@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "minecraft:flower_forest",
-    "minecraft:wooded_badlands"
+    "minecraft:wooded_badlands",
+    { "id": "#c:flower_forests", "required": false },
+    { "id": "#c:mesa", "required": false }
   ]
 }

@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -59,6 +58,12 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
         };
     }
 
+    /**
+     * Placing the 3-tall column is 3 sequential setBlock calls (see {@link #placeAt}), so each
+     * part briefly sees stale neighbors mid-placement. Checking canSurvive synchronously here
+     * would destroy parts before the rest of the column exists; defer the check a tick instead,
+     * by which point placement has fully finished.
+     */
     @Override
     protected BlockState updateShape(
             BlockState state,
@@ -68,22 +73,17 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
             BlockPos pos,
             BlockPos neighborPos
     ) {
-        Part part = state.getValue(PART);
-        if (part == Part.LOWER && direction == Direction.UP && (!neighborState.is(this) || neighborState.getValue(PART) != Part.MIDDLE)) {
-            return Blocks.AIR.defaultBlockState();
+        if (direction == Direction.UP || direction == Direction.DOWN) {
+            level.scheduleTick(pos, this, 1);
         }
-        if (part == Part.MIDDLE) {
-            if (direction == Direction.DOWN && (!neighborState.is(this) || neighborState.getValue(PART) != Part.LOWER)) {
-                return Blocks.AIR.defaultBlockState();
-            }
-            if (direction == Direction.UP && (!neighborState.is(this) || neighborState.getValue(PART) != Part.UPPER)) {
-                return Blocks.AIR.defaultBlockState();
-            }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!state.canSurvive(level, pos)) {
+            level.destroyBlock(pos, true);
         }
-        if (part == Part.UPPER && direction == Direction.DOWN && (!neighborState.is(this) || neighborState.getValue(PART) != Part.MIDDLE)) {
-            return Blocks.AIR.defaultBlockState();
-        }
-        return state.canSurvive(level, pos) ? super.updateShape(state, direction, neighborState, level, pos, neighborPos) : Blocks.AIR.defaultBlockState();
     }
 
     @Override
@@ -98,6 +98,9 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
     ) {
         if (player.getItemInHand(hand).is(Items.BONE_MEAL)) {
             popResource(level, pos, new ItemStack(state.getBlock().asItem(), 1));
+            if (!level.isClientSide) {
+                level.levelEvent(1505, pos, 15);
+            }
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 

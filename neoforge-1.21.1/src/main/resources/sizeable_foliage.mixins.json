@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BoneMealItemVeryTallGrassMixin",
-    "BoneMealItemTorchflowerBushMixin"
+    "BoneMealItemTorchflowerBushMixin",
+    "TorchflowerBlockStateMixin"
   ],
   "client": [
     "client.BlockRenderDispatcherBigBushMixin",

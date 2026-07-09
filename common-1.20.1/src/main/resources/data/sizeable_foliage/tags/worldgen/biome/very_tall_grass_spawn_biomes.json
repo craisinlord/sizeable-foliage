@@ -4,6 +4,9 @@
     "minecraft:plains",
     "minecraft:savanna",
     "minecraft:forest",
+    { "id": "#c:plains", "required": false },
+    { "id": "#c:savanna", "required": false },
+    { "id": "#c:forest", "required": false },
     { "id": "#c:jungle", "required": false }
   ]
 }

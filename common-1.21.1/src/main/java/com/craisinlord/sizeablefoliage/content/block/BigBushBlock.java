@@ -240,6 +240,7 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             level.removeBlock(pos, false);
         }
         placeStage(level, target.origin(), target.state());
+        level.levelEvent(1505, target.origin(), 15);
     }
 
     /** Pops a bonus item when bone meal is used on a fully-grown (age 2) bush; shared with {@link BigBushPartBlock}. */

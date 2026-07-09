@@ -6,7 +6,8 @@
   "refmap": "sizeable_foliage-forge.mixins.refmap.json",
   "mixins": [
     "BoneMealItemVeryTallGrassMixin",
-    "BoneMealItemTorchflowerBushMixin"
+    "BoneMealItemTorchflowerBushMixin",
+    "TorchflowerBlockStateMixin"
   ],
   "client": [
     "client.BlockRenderDispatcherBigBushMixin",

@@ -47,6 +47,9 @@ public class MilkweedBlock extends DoublePlantBlock implements BonemealableBlock
     ) {
         if (player.getItemInHand(hand).is(Items.BONE_MEAL)) {
             popResource(level, pos, new ItemStack(state.getBlock().asItem(), 1));
+            if (!level.isClientSide()) {
+                level.levelEvent(1505, pos, 15);
+            }
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 

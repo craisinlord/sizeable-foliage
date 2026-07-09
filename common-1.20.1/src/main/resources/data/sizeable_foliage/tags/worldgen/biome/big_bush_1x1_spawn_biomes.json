@@ -15,6 +15,14 @@
     "minecraft:flower_forest",
     "minecraft:wooded_badlands",
     "minecraft:savanna",
-    "minecraft:savanna_plateau"
+    "minecraft:savanna_plateau",
+    { "id": "#c:forest", "required": false },
+    { "id": "#c:windswept", "required": false },
+    { "id": "#c:jungle", "required": false },
+    { "id": "#c:taiga", "required": false },
+    { "id": "#c:birch_forest", "required": false },
+    { "id": "#c:flower_forests", "required": false },
+    { "id": "#c:mesa", "required": false },
+    { "id": "#c:savanna", "required": false }
   ]
 }
