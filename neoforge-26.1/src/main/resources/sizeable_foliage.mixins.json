@@ -7,6 +7,9 @@
     "BoneMealItemVeryTallGrassMixin",
     "BoneMealItemTorchflowerBushMixin"
   ],
+  "client": [
+    "client.LivingEntityRendererBigBushMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

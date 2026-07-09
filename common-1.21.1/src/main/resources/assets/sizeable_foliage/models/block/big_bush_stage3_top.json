@@ -1,7 +1,7 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "sizeable_foliage:block/big_bush/big_bush_stage3",
+    "particle": "sizeable_foliage:block/big_bush/big_bush_stage1",
     "cross": "sizeable_foliage:block/big_bush/big_bush_stage3"
   },
   "elements": [

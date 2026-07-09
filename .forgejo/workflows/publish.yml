@@ -1,0 +1,425 @@
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish-mod:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Forge 1.20.1
+            subproject: forge-1.20.1
+            jar_glob: "forge-1.20.1/build/libs/*.jar"
+            mc_version: "1.20.1"
+            loader: forge
+            standalone: true
+
+          - name: Fabric 1.20.1
+            subproject: fabric-1.20.1
+            gradle_task: ":fabric-1.20.1:build"
+            jar_glob: "fabric-1.20.1/build/libs/*.jar"
+            mc_version: "1.20.1"
+            loader: fabric
+
+          - name: Fabric 1.21.1
+            subproject: fabric-1.21.1
+            gradle_task: ":fabric-1.21.1:build"
+            jar_glob: "fabric-1.21.1/build/libs/*.jar"
+            mc_version: "1.21.1"
+            loader: fabric
+
+          - name: NeoForge 1.21.1
+            subproject: neoforge-1.21.1
+            gradle_task: ":neoforge-1.21.1:build"
+            jar_glob: "neoforge-1.21.1/build/libs/*.jar"
+            mc_version: "1.21.1"
+            loader: neoforge
+
+          - name: Fabric 26.1
+            subproject: fabric-26.1
+            gradle_task: ":fabric-26.1:build"
+            jar_glob: "fabric-26.1/build/libs/*.jar"
+            mc_version: |
+              26.1
+              26.1.1
+              26.1.2
+            loader: fabric
+
+          - name: NeoForge 26.1
+            subproject: neoforge-26.1
+            gradle_task: ":neoforge-26.1:build"
+            jar_glob: "neoforge-26.1/build/libs/*.jar"
+            mc_version: |
+              26.1
+              26.1.1
+              26.1.2
+            loader: neoforge
+
+    name: Publish ${{ matrix.name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', '**/gradle-wrapper.properties', '**/gradle.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Read mod properties
+        id: props
+        run: |
+          echo "mod_id=$(grep -oP '^mod_id=\K.*' gradle.properties)" >> "$GITHUB_OUTPUT"
+          echo "mod_name=$(grep -oP '^mod_name=\K.*' gradle.properties)" >> "$GITHUB_OUTPUT"
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION=$(grep -oP '^mod_version=\K.*' gradle.properties)
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Using version: $VERSION"
+
+      - name: Determine version-type
+        id: vt
+        run: |
+          case "${{ steps.version.outputs.version }}" in
+            *-alpha*) echo "type=alpha" >> "$GITHUB_OUTPUT" ;;
+            *-beta*)  echo "type=beta"  >> "$GITHUB_OUTPUT" ;;
+            *)        echo "type=release" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Build ${{ matrix.name }}
+        run: |
+          if [[ "${{ matrix.standalone }}" == "true" ]]; then
+            export JAVA_HOME="$JAVA_HOME_17_X64"
+            cd "${{ matrix.subproject }}"
+            ./gradlew build -Pmod_version=${{ steps.version.outputs.version }} --no-daemon
+          else
+            ./gradlew ${{ matrix.gradle_task }} -Pmod_version=${{ steps.version.outputs.version }} --no-daemon
+          fi
+
+      - name: Resolve jar path
+        id: jar
+        run: |
+          shopt -s nullglob
+          JARS=()
+          for f in ${{ matrix.jar_glob }}; do
+            basename="$(basename "$f")"
+            if [[ "$basename" != *-sources.jar ]] && \
+               [[ "$basename" != *-javadoc.jar ]] && \
+               [[ "$basename" != *-dev.jar ]] && \
+               [[ "$basename" != *-shadow.jar ]] && \
+               [[ "$basename" != *-slim.jar ]]; then
+              JARS+=("$f")
+            fi
+          done
+          if [[ ${#JARS[@]} -eq 0 ]]; then
+            echo "::error::No jar found matching ${{ matrix.jar_glob }}"
+            find . -path '*/build/libs/*.jar' -print
+            exit 1
+          fi
+          if [[ ${#JARS[@]} -gt 1 ]]; then
+            echo "::error::Multiple jars found matching ${{ matrix.jar_glob }}:"
+            printf '  %s\n' "${JARS[@]}"
+            exit 1
+          fi
+          JAR="${JARS[0]}"
+          echo "jar_path=$JAR" >> "$GITHUB_OUTPUT"
+          echo "Resolved jar: $JAR"
+
+      # Only upload on tag pushes. workflow_dispatch stops after the build
+      # step, which is enough to verify the matrix compiles. mc-publish v3.3
+      # has no dry-run input, so a step-level `if` is the only reliable gate.
+      - name: Publish ${{ matrix.name }}
+        if: github.ref_type == 'tag'
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: ${{ steps.jar.outputs.jar_path }}
+          name: "${{ steps.props.outputs.mod_name }} ${{ steps.version.outputs.version }} (${{ matrix.name }})"
+          version: ${{ steps.version.outputs.version }}+${{ matrix.subproject }}
+          version-type: ${{ steps.vt.outputs.type }}
+          changelog-file: CHANGELOG.md
+          game-versions: ${{ matrix.mc_version }}
+          loaders: ${{ matrix.loader }}
+
+      # Hand the built jar to the forgejo-release job. One artifact per matrix
+      # entry; the release job downloads them all with merge-multiple.
+      - name: Stash jar for release
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar-${{ matrix.subproject }}
+          path: ${{ steps.jar.outputs.jar_path }}
+          retention-days: 1
+          if-no-files-found: error
+
+  publish-maven:
+    runs-on: ubuntu-latest
+    name: Publish to Maven (Forgejo registry)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', '**/gradle-wrapper.properties', '**/gradle.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION=$(grep -oP '^mod_version=\K.*' gradle.properties)
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Using version: $VERSION"
+
+      - name: Publish non-forge artifacts to Forgejo Maven
+        if: github.ref_type == 'tag'
+        env:
+          FORGEJO_ACTOR: ${{ github.actor }}
+          FORGEJO_TOKEN: ${{ secrets.MAVEN_PUBLISH_TOKEN }}
+        run: |
+          ./gradlew \
+            :fabric-1.20.1:publishMavenJavaPublicationToForgejoRepository \
+            :fabric-1.21.1:publishMavenJavaPublicationToForgejoRepository \
+            :fabric-26.1:publishMavenJavaPublicationToForgejoRepository \
+            :neoforge-1.21.1:publishMavenJavaPublicationToForgejoRepository \
+            :neoforge-26.1:publishMavenJavaPublicationToForgejoRepository \
+            -Pmod_version=${{ steps.version.outputs.version }} \
+            --no-daemon
+
+      - name: Publish forge-1.20.1 to Forgejo Maven
+        if: github.ref_type == 'tag'
+        env:
+          FORGEJO_ACTOR: ${{ github.actor }}
+          FORGEJO_TOKEN: ${{ secrets.MAVEN_PUBLISH_TOKEN }}
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          cd forge-1.20.1
+          ./gradlew publishMavenJavaPublicationToForgejoRepository \
+            -Pmod_version=${{ steps.version.outputs.version }} \
+            --no-daemon
+
+  forgejo-release:
+    needs: [publish-mod]
+    if: success() && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    name: Create Forgejo release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all platform jars
+        uses: actions/download-artifact@v3
+        with:
+          path: release-jars
+
+      - name: Flatten artifact dirs
+        run: |
+          mkdir -p flat
+          find release-jars -name '*.jar' -exec mv -v {} flat/ \;
+          ls -lh flat/
+          test "$(ls flat/*.jar | wc -l)" -eq 6 || { echo "::error::expected 6 jars, got $(ls flat/*.jar | wc -l)"; exit 1; }
+
+      - name: Build release body
+        id: body
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          MOD_ID=$(grep -oP '^mod_id=\K.*' gradle.properties)
+          MOD_NAME=$(grep -oP '^mod_name=\K.*' gradle.properties)
+          GROUP_PATH=$(grep -oP '^mod_group_id=\K.*' gradle.properties | tr . /)
+
+          CHANGELOG=$(awk -v ver="v$VERSION" '
+            $0 ~ "^## "ver { in_section=1; next }
+            in_section && /^## / { exit }
+            in_section { print }
+          ' CHANGELOG.md)
+
+          {
+            echo "## Downloads"
+            echo ""
+            echo "Pick the jar that matches your loader and Minecraft version. The same files are also on the"
+            echo "[Forgejo Maven](https://maven.tysontheember.dev/$GROUP_PATH/) (\`$(grep -oP '^mod_group_id=\K.*' gradle.properties):$MOD_ID-<loader>-<mc>:$VERSION\`)."
+            echo ""
+            echo "## Changelog"
+            echo ""
+            echo "$CHANGELOG"
+          } > release-body.md
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "mod_name=$MOD_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Replace any existing release
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          API="${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases"
+          RID=$(curl -sf -H "Authorization: token $TOKEN" "$API/tags/${{ github.ref_name }}" | jq -r '.id // empty')
+          if [[ -n "$RID" ]]; then
+            echo "Deleting existing release id=$RID"
+            curl -fsS -X DELETE -H "Authorization: token $TOKEN" "$API/$RID"
+          else
+            echo "No existing release for tag ${{ github.ref_name }}"
+          fi
+
+      - name: Create release
+        id: create
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          VERSION="${{ steps.body.outputs.version }}"
+          case "$VERSION" in
+            *-alpha*|*-beta*|*-rc*) PRERELEASE=true ;;
+            *)                      PRERELEASE=false ;;
+          esac
+          PAYLOAD=$(jq -n \
+            --arg tag "${{ github.ref_name }}" \
+            --arg name "${{ steps.body.outputs.mod_name }} $VERSION" \
+            --rawfile body release-body.md \
+            --argjson prerelease "$PRERELEASE" \
+            '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:$prerelease}')
+          RESP=$(curl -fsS -X POST -H "Authorization: token $TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "$PAYLOAD" \
+            "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases")
+          RID=$(echo "$RESP" | jq -r .id)
+          echo "release_id=$RID" >> "$GITHUB_OUTPUT"
+          echo "Created release id=$RID"
+
+      - name: Upload jars as release assets
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RID: ${{ steps.create.outputs.release_id }}
+        run: |
+          set -e
+          for jar in flat/*.jar; do
+            name=$(basename "$jar")
+            echo "Uploading $name ($(stat -c%s "$jar") bytes)..."
+            curl -fsS -X POST -H "Authorization: token $TOKEN" \
+              -H "Content-Type: application/java-archive" \
+              --data-binary @"$jar" \
+              "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/releases/$RID/assets?name=$name" \
+              > /dev/null
+          done
+          echo "All 6 jars uploaded."
+
+  notify-discord:
+    needs: [publish-mod, publish-maven, forgejo-release]
+    if: success() && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    name: Announce release in Discord
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build payload
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          MOD_ID=$(grep -oP '^mod_id=\K.*' gradle.properties)
+
+          # Extract this version's section from CHANGELOG.md. Matches the
+          # "## vX.Y.Z" header and prints everything until the next "## ".
+          CHANGELOG=$(awk -v ver="v$VERSION" '
+            $0 ~ "^## "ver { in_section=1; next }
+            in_section && /^## / { exit }
+            in_section { print }
+          ' CHANGELOG.md)
+
+          jq -n \
+            --arg mod "$MOD_ID" \
+            --arg version "$VERSION" \
+            --arg tag "${{ github.ref_name }}" \
+            --arg changelog "$CHANGELOG" \
+            --argjson platforms '[
+              "Forge 1.20.1",
+              "Fabric 1.20.1",
+              "Fabric 1.21.1",
+              "NeoForge 1.21.1",
+              "Fabric 26.1",
+              "NeoForge 26.1"
+            ]' \
+            '{mod:$mod, version:$version, tag:$tag, changelog:$changelog, platforms:$platforms, ping:true}' \
+            > payload.json
+
+          echo "Payload size: $(wc -c < payload.json) bytes"
+
+      - name: POST to discord-bot
+        env:
+          SECRET: ${{ secrets.DISCORD_RELEASE_WEBHOOK_SECRET }}
+        run: |
+          SIG=$(openssl dgst -sha256 -hmac "$SECRET" -hex < payload.json | awk '{print $NF}')
+          curl -fSs -X POST "http://discord-bot:8080/webhook/release" \
+            -H "Content-Type: application/json" \
+            -H "X-Webhook-Signature: sha256=$SIG" \
+            --data-binary @payload.json

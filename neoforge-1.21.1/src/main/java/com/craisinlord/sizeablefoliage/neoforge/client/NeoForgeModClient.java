@@ -5,7 +5,7 @@ import com.craisinlord.sizeablefoliage.neoforge.registry.NeoForgeModBlocks;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.level.GrassColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -33,7 +33,7 @@ public final class NeoForgeModClient {
     @SubscribeEvent
     public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(
-                (stack, tintIndex) -> FoliageColor.getDefaultColor(),
+                (stack, tintIndex) -> GrassColor.getDefaultColor(),
                 NeoForgeModBlocks.BIG_BUSH_ITEM.get(),
                 NeoForgeModBlocks.VERY_SHORT_GRASS_ITEM.get(),
                 NeoForgeModBlocks.VERY_TALL_GRASS_ITEM.get()

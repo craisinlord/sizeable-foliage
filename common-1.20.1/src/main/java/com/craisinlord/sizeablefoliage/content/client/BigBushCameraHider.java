@@ -36,7 +36,7 @@ public final class BigBushCameraHider {
     }
 
     private static void markDirty(Minecraft mc, BlockPos origin) {
-        if (origin != null && mc.levelRenderer != null) {
+        if (origin != null && mc.level != null && mc.levelRenderer != null) {
             mc.levelRenderer.setBlocksDirty(
                     origin.getX() - 2, origin.getY() - 1, origin.getZ() - 2,
                     origin.getX() + 2, origin.getY() + 3, origin.getZ() + 2);

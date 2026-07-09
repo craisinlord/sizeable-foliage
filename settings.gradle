@@ -20,11 +20,14 @@ rootProject.name = 'sizeable-foliage'
 include 'common-1.20.1'
 include 'common-1.21.1'
 include 'common-26.1'
+include 'common-26.2'
 include 'fabric-1.20.1'
 include 'fabric-1.21.1'
 include 'fabric-26.1'
+include 'fabric-26.2'
 include 'neoforge-1.21.1'
 include 'neoforge-26.1'
+include 'neoforge-26.2'
 
 // forge-1.20.1 is intentionally NOT included here. ForgeGradle 6 isn't Gradle 9
 // compatible and `includeBuild` can't bridge Gradle versions, so it lives as its own

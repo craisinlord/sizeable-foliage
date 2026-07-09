@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#sizeable_foliage:big_bush_3x3_quite_common_spawn_biomes",
+  "features": ["sizeable_foliage:big_bush_3x3_quite_common"],
+  "step": "vegetal_decoration"
+}

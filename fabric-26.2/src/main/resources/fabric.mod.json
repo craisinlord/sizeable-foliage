@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["craisinlord"],
+  "license": "${mod_license}",
+  "environment": "*",
+
+  "entrypoints": {
+    "main": [
+      "com.craisinlord.sizeablefoliage.fabric.SizeableFoliageFabric"
+    ],
+    "client": [
+      "com.craisinlord.sizeablefoliage.fabric.SizeableFoliageFabricClient"
+    ]
+  },
+
+  "mixins": [
+    "${mod_id}-fabric.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "fabric-api": "*",
+    "minecraft": ">=26.2 <26.3",
+    "java": ">=25"
+  }
+}

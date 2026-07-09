@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.level.GrassColor;
 
 public class SizeableFoliageFabricClient implements ClientModInitializer {
     @Override
@@ -22,7 +22,7 @@ public class SizeableFoliageFabricClient implements ClientModInitializer {
                 FabricModBlocks.VERY_TALL_GRASS
         );
         ColorProviderRegistry.ITEM.register(
-                (stack, tintIndex) -> FoliageColor.getDefaultColor(),
+                (stack, tintIndex) -> GrassColor.getDefaultColor(),
                 FabricModBlocks.BIG_BUSH_ITEM,
                 FabricModBlocks.VERY_SHORT_GRASS_ITEM,
                 FabricModBlocks.VERY_TALL_GRASS_ITEM
