@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:jungle",
-    "minecraft:dark_forest",
     { "id": "#c:jungle", "required": false }
   ]
 }

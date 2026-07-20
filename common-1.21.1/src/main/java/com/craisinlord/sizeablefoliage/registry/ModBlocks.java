@@ -2,6 +2,9 @@ package com.craisinlord.sizeablefoliage.registry;
 
 import com.craisinlord.sizeablefoliage.content.block.BigBushBlock;
 import com.craisinlord.sizeablefoliage.content.block.BigBushPartBlock;
+import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushBlock;
+import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushPartBlock;
+import com.craisinlord.sizeablefoliage.content.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.content.block.TorchflowerBushBlock;
 import com.craisinlord.sizeablefoliage.content.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.content.block.VeryTallGrassBlock;
@@ -51,5 +54,25 @@ public final class ModBlocks {
 
     public static VeryTallGrassBlock createVeryTallGrass() {
         return new VeryTallGrassBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS));
+    }
+
+    public static BigSweetBerryBushBlock createBigSweetBerryBush() {
+        return new BigSweetBerryBushBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SWEET_BERRY_BUSH)
+                .noOcclusion());
+    }
+
+    public static BigSweetBerryBushPartBlock createBigSweetBerryBushPart() {
+        return new BigSweetBerryBushPartBlock(BlockBehaviour.Properties.of()
+                .mapColor(MapColor.PLANT)
+                .noCollission()
+                .instabreak()
+                .sound(SoundType.GRASS)
+                .pushReaction(PushReaction.DESTROY)
+                .noLootTable());
+    }
+
+    public static FernWallBlock createFernWall() {
+        return new FernWallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LARGE_FERN)
+                .offsetType(BlockBehaviour.OffsetType.NONE));
     }
 }

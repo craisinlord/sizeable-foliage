@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "berry_stage=0,facing=east,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries"
+    },
+    "berry_stage=0,facing=south,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 90
+    },
+    "berry_stage=0,facing=west,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 180
+    },
+    "berry_stage=0,facing=north,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 270
+    },
+    "berry_stage=1,facing=east,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries"
+    },
+    "berry_stage=1,facing=south,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 90
+    },
+    "berry_stage=1,facing=west,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 180
+    },
+    "berry_stage=1,facing=north,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 270
+    },
+    "berry_stage=2,facing=east,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries"
+    },
+    "berry_stage=2,facing=south,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 90
+    },
+    "berry_stage=2,facing=west,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 180
+    },
+    "berry_stage=2,facing=north,sheared=false": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 270
+    },
+    "berry_stage=0,facing=east,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries"
+    },
+    "berry_stage=0,facing=south,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 90
+    },
+    "berry_stage=0,facing=west,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 180
+    },
+    "berry_stage=0,facing=north,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_no_berries",
+      "y": 270
+    },
+    "berry_stage=1,facing=east,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries"
+    },
+    "berry_stage=1,facing=south,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 90
+    },
+    "berry_stage=1,facing=west,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 180
+    },
+    "berry_stage=1,facing=north,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_some_berries",
+      "y": 270
+    },
+    "berry_stage=2,facing=east,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries"
+    },
+    "berry_stage=2,facing=south,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 90
+    },
+    "berry_stage=2,facing=west,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 180
+    },
+    "berry_stage=2,facing=north,sheared=true": {
+      "model": "sizeable_foliage:block/big_sweet_berry_bush_full_berries",
+      "y": 270
+    }
+  }
+}

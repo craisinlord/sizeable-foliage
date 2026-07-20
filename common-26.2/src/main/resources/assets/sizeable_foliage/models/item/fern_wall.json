@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "sizeable_foliage:block/fern_wall/fern_wall_top_single"
+  }
+}

@@ -17,6 +17,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,6 +78,28 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
         if (!state.canSurvive(level, pos)) {
             level.destroyBlock(pos, true);
         }
+    }
+
+    /** Breaking any one of the 3 parts immediately clears the other 2, instead of waiting on the
+     *  scheduled-tick canSurvive cascade (which is delayed and can leave stale parts behind). */
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())) {
+            for (BlockPos otherPos : otherPartPositions(state, pos)) {
+                if (level.getBlockState(otherPos).is(this)) {
+                    level.setBlock(otherPos, Blocks.AIR.defaultBlockState(), 35);
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    private static java.util.List<BlockPos> otherPartPositions(BlockState state, BlockPos pos) {
+        return switch (state.getValue(PART)) {
+            case LOWER -> java.util.List.of(pos.above(), pos.above(2));
+            case MIDDLE -> java.util.List.of(pos.below(), pos.above());
+            case UPPER -> java.util.List.of(pos.below(), pos.below(2));
+        };
     }
 
     @Override

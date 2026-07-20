@@ -10,6 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -28,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -38,31 +42,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Multiblock bush grown with bonemeal. The origin block carries the
- * loot/age; the rest of the footprint is filled with invisible
- * {@link BigBushPartBlock}s.
- *
- * age 0: single block (1x1x1)
- * age 1: 2x2x2 footprint; FACING + FACING.getClockWise() pick the horizontal quadrant
- * age 2: 3x3x3 footprint centered on the origin column
- *
- * Grown stages require a sturdy support block under every column of their
- * footprint. Growing from 2x2 to 3x3 may relocate the origin to any of the four
- * occupied columns to find room.
- */
 public class BigBushBlock extends BushBlock implements BonemealableBlock {
     public static final MapCodec<BigBushBlock> CODEC = Block.simpleCodec(BigBushBlock::new);
 
-    public static final IntegerProperty AGE = BlockStateProperties.AGE_2;
+    public static final IntegerProperty AGE = IntegerProperty.create("age", 1, 2);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-
-    private static final VoxelShape SMALL_SHAPE = Block.box(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public BigBushBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
-                .setValue(AGE, 0)
+                .setValue(AGE, 1)
                 .setValue(FACING, Direction.EAST));
     }
 
@@ -79,10 +68,26 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(AGE) == 0 ? SMALL_SHAPE : Shapes.block();
+        return Shapes.block();
     }
 
-    /** All part positions belonging to a bush with the given origin state/pos */
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        applySlowdown(state, entity);
+        super.entityInside(state, level, pos, entity, effectApplier, isPrecise);
+    }
+
+    public static void applySlowdown(BlockState state, Entity entity) {
+        if (entity instanceof LivingEntity) {
+            entity.makeStuckInBlock(state, new Vec3(0.8, 0.75, 0.8));
+        }
+    }
+
+    @Override
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+        return new ItemStack(Blocks.BUSH);
+    }
+
     public static List<BlockPos> partPositions(BlockState state, BlockPos origin) {
         List<BlockPos> positions = new ArrayList<>();
         int age = state.getValue(AGE);
@@ -113,7 +118,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         return positions;
     }
 
-    /** Ground columns of the footprint, each needs a sturdy block below it. */
     public static List<BlockPos> supportColumns(BlockState state, BlockPos origin) {
         List<BlockPos> columns = new ArrayList<>();
         int age = state.getValue(AGE);
@@ -148,9 +152,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        if (state.getValue(AGE) == 0) {
-            return super.canSurvive(state, level, pos);
-        }
         return hasFullSupport(state, level, pos);
     }
 
@@ -163,27 +164,12 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
     @Nullable
     private GrowthTarget findGrowthTarget(LevelReader level, BlockPos pos, BlockState state, RandomSource random) {
         int age = state.getValue(AGE);
-        if (age == 0) {
-            List<Direction> facings = new ArrayList<>(Direction.Plane.HORIZONTAL.stream().toList());
-            for (int i = facings.size() - 1; i > 0; i--) {
-                Direction swap = facings.set(random.nextInt(i + 1), facings.get(i));
-                facings.set(i, swap);
-            }
-            for (Direction facing : facings) {
-                BlockState grown = state.setValue(AGE, 1).setValue(FACING, facing);
-                if (canGrowTo(level, pos, grown, Set.of(pos))) {
-                    return new GrowthTarget(pos, grown);
-                }
-            }
-            return null;
-        }
         if (age == 1) {
             Direction forward = state.getValue(FACING);
             Direction side = forward.getClockWise();
             Set<BlockPos> owned = new HashSet<>(partPositions(state, pos));
             owned.add(pos);
             BlockState grown = state.setValue(AGE, 2);
-            // Any of the four occupied columns can become the new center of the 3x3.
             for (BlockPos candidate : new BlockPos[]{
                     pos, pos.relative(forward).relative(side), pos.relative(forward), pos.relative(side)}) {
                 if (canGrowTo(level, candidate, grown, owned)) {
@@ -204,7 +190,8 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             if (owned.contains(pos)) {
                 continue;
             }
-            if (!level.getBlockState(pos).canBeReplaced()) {
+            BlockState state = level.getBlockState(pos);
+            if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
                 return false;
             }
         }
@@ -258,13 +245,12 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         level.levelEvent(1505, target.origin(), 15);
     }
 
-    /** Pops a bonus item when bone meal is used on a fully-grown (age 2) bush; shared with {@link BigBushPartBlock}. */
     public static boolean grantBonemealBonus(Level level, BlockPos originPos, BlockState originState, Player player, ItemStack stack) {
         if (!(originState.getBlock() instanceof BigBushBlock bigBush) || originState.getValue(AGE) != 2) {
             return false;
         }
         if (!level.isClientSide()) {
-            bigBush.popResource(level, originPos, new ItemStack(bigBush, 1));
+            bigBush.popResource(level, originPos, new ItemStack(Blocks.BUSH, 1));
             if (!player.getAbilities().instabuild) {
                 stack.shrink(1);
             }

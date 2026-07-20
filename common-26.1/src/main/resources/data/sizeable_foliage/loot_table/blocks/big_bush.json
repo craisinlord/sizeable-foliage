@@ -16,7 +16,7 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "sizeable_foliage:big_bush",
+              "name": "minecraft:bush",
               "conditions": [
                 {
                   "condition": "minecraft:block_state_property",
@@ -35,26 +35,13 @@
             },
             {
               "type": "minecraft:item",
-              "name": "sizeable_foliage:big_bush",
-              "conditions": [
-                {
-                  "condition": "minecraft:block_state_property",
-                  "block": "sizeable_foliage:big_bush",
-                  "properties": {
-                    "age": "1"
-                  }
-                }
-              ],
+              "name": "minecraft:bush",
               "functions": [
                 {
                   "function": "minecraft:set_count",
                   "count": 2.0
                 }
               ]
-            },
-            {
-              "type": "minecraft:item",
-              "name": "sizeable_foliage:big_bush"
             }
           ]
         }

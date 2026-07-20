@@ -2,6 +2,7 @@ package com.craisinlord.sizeablefoliage.forge.registry;
 
 import com.craisinlord.sizeablefoliage.Constants;
 import com.craisinlord.sizeablefoliage.content.worldgen.BigBushWorldgenFeature;
+import com.craisinlord.sizeablefoliage.content.worldgen.BigSweetBerryBushWorldgenFeature;
 import com.craisinlord.sizeablefoliage.content.worldgen.VeryTallGrassFeature;
 import com.craisinlord.sizeablefoliage.registry.ModFeatures;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +17,7 @@ public final class ForgeModFeatures {
     public static final RegistryObject<VeryTallGrassFeature> VERY_TALL_GRASS = FEATURES.register("very_tall_grass", ModFeatures::createVeryTallGrassFeature);
     public static final RegistryObject<BigBushWorldgenFeature> BIG_BUSH_2X2 = FEATURES.register("big_bush_2x2", ModFeatures::createBigBush2x2Feature);
     public static final RegistryObject<BigBushWorldgenFeature> BIG_BUSH_3X3 = FEATURES.register("big_bush_3x3", ModFeatures::createBigBush3x3Feature);
+    public static final RegistryObject<BigSweetBerryBushWorldgenFeature> BIG_SWEET_BERRY_BUSH = FEATURES.register("big_sweet_berry_bush", ModFeatures::createBigSweetBerryBushFeature);
 
     private ForgeModFeatures() {
     }

@@ -2,6 +2,9 @@ package com.craisinlord.sizeablefoliage.registry;
 
 import com.craisinlord.sizeablefoliage.block.BigBushBlock;
 import com.craisinlord.sizeablefoliage.block.BigBushPartBlock;
+import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushBlock;
+import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushPartBlock;
+import com.craisinlord.sizeablefoliage.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.block.TorchflowerBushBlock;
 import com.craisinlord.sizeablefoliage.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.block.VeryTallGrassBlock;
@@ -13,14 +16,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
-/**
- * Loader-agnostic block property definitions, shared by the Fabric and NeoForge
- * registration classes so the properties stay in sync across loaders.
- *
- * 26.1 requires {@code Properties.setId(key)} to be set before a block is constructed
- * (blocks now resolve their own registry id during {@code BlockBehaviour}'s constructor),
- * so every factory method here takes the block's own {@link ResourceKey}.
- */
 public final class ModBlocks {
     private ModBlocks() {
     }
@@ -62,5 +57,28 @@ public final class ModBlocks {
     public static VeryTallGrassBlock createVeryTallGrass(ResourceKey<Block> key) {
         return new VeryTallGrassBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TALL_GRASS)
                 .setId(key));
+    }
+
+    public static BigSweetBerryBushBlock createBigSweetBerryBush(ResourceKey<Block> key) {
+        return new BigSweetBerryBushBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SWEET_BERRY_BUSH)
+                .setId(key)
+                .noOcclusion());
+    }
+
+    public static BigSweetBerryBushPartBlock createBigSweetBerryBushPart(ResourceKey<Block> key) {
+        return new BigSweetBerryBushPartBlock(BlockBehaviour.Properties.of()
+                .setId(key)
+                .mapColor(MapColor.PLANT)
+                .noCollision()
+                .instabreak()
+                .sound(SoundType.GRASS)
+                .pushReaction(PushReaction.DESTROY)
+                .noLootTable());
+    }
+
+    public static FernWallBlock createFernWall(ResourceKey<Block> key) {
+        return new FernWallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LARGE_FERN)
+                .setId(key)
+                .offsetType(BlockBehaviour.OffsetType.NONE));
     }
 }

@@ -19,6 +19,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -60,12 +61,6 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
         };
     }
 
-    /**
-     * Placing the 3-tall column is 3 sequential setBlock calls (see {@link #placeAt}), so each
-     * part briefly sees stale neighbors mid-placement. Checking canSurvive synchronously here
-     * would destroy parts before the rest of the column exists; defer the check a tick instead,
-     * by which point placement has fully finished.
-     */
     @Override
     protected BlockState updateShape(
             BlockState state,
@@ -77,7 +72,10 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
             BlockState neighborState,
             RandomSource random
     ) {
-        if (direction == Direction.UP || direction == Direction.DOWN) {
+        if (state.getValue(PART) != Part.LOWER) {
+            return state;
+        }
+        if (direction == Direction.DOWN) {
             tickAccess.scheduleTick(pos, this, 1);
         }
         return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
@@ -88,6 +86,24 @@ public class VeryTallGrassBlock extends BushBlock implements BonemealableBlock {
         if (!state.canSurvive(level, pos)) {
             level.destroyBlock(pos, true);
         }
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        for (BlockPos otherPos : otherPartPositions(state, pos)) {
+            if (level.getBlockState(otherPos).is(this)) {
+                level.setBlock(otherPos, Blocks.AIR.defaultBlockState(), 35);
+            }
+        }
+        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+    }
+
+    private static java.util.List<BlockPos> otherPartPositions(BlockState state, BlockPos pos) {
+        return switch (state.getValue(PART)) {
+            case LOWER -> java.util.List.of(pos.above(), pos.above(2));
+            case MIDDLE -> java.util.List.of(pos.below(), pos.above());
+            case UPPER -> java.util.List.of(pos.below(), pos.below(2));
+        };
     }
 
     @Override

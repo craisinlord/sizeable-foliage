@@ -6,7 +6,10 @@
   "mixins": [
     "BoneMealItemVeryTallGrassMixin",
     "BoneMealItemTorchflowerBushMixin",
-    "TorchflowerBlockStateMixin"
+    "TorchflowerBlockStateMixin",
+    "BlockItemSweetBerriesMixin",
+    "BoneMealItemSweetBerryBushMergeMixin",
+    "BoneMealItemFernWallMixin"
   ],
   "client": [
     "client.BlockRenderDispatcherBigBushMixin",

@@ -65,7 +65,10 @@ public class BigBushWorldgenFeature extends Feature<NoneFeatureConfiguration> {
         List<BlockPos> positions = new ArrayList<>(BigBushBlock.partPositions(grown, origin));
         positions.add(origin);
         for (BlockPos pos : positions) {
-            if (!level.getBlockState(pos).canBeReplaced()) {
+            BlockState state = level.getBlockState(pos);
+            // canBeReplaced() alone isn't enough: water is replaceable, so a footprint column
+            // sitting in a puddle would silently pass and get overwritten by bush foliage.
+            if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
                 return false;
             }
         }

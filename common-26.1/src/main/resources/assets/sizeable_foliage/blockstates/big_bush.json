@@ -1,9 +1,5 @@
 {
   "variants": {
-    "age=0,facing=north": { "model": "sizeable_foliage:block/big_bush_stage1" },
-    "age=0,facing=east": { "model": "sizeable_foliage:block/big_bush_stage1" },
-    "age=0,facing=south": { "model": "sizeable_foliage:block/big_bush_stage1" },
-    "age=0,facing=west": { "model": "sizeable_foliage:block/big_bush_stage1" },
     "age=1,facing=east": { "model": "sizeable_foliage:block/big_bush_stage2" },
     "age=1,facing=south": { "model": "sizeable_foliage:block/big_bush_stage2", "y": 90 },
     "age=1,facing=west": { "model": "sizeable_foliage:block/big_bush_stage2", "y": 180 },

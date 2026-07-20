@@ -1,15 +1,52 @@
 {
   "feature": "sizeable_foliage:big_bush_3x3",
   "placement": [
-    { "type": "minecraft:rarity_filter", "chance": 1 },
-    { "type": "minecraft:in_square" },
-    { "type": "minecraft:heightmap", "heightmap": "MOTION_BLOCKING" },
-    { "type": "minecraft:biome" },
-    { "type": "minecraft:count", "count": 27 },
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 1
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING"
+    },
+    {
+      "type": "minecraft:biome"
+    },
+    {
+      "type": "minecraft:count",
+      "count": 14
+    },
     {
       "type": "minecraft:random_offset",
-      "xz_spread": { "type": "minecraft:uniform", "min_inclusive": -7, "max_inclusive": 7 },
-      "y_spread": { "type": "minecraft:uniform", "min_inclusive": -2, "max_inclusive": 2 }
+      "xz_spread": {
+        "type": "minecraft:uniform",
+        "min_inclusive": -7,
+        "max_inclusive": 7
+      },
+      "y_spread": {
+        "type": "minecraft:uniform",
+        "min_inclusive": -2,
+        "max_inclusive": 2
+      }
+    },
+    {
+      "type": "minecraft:surface_water_depth_filter",
+      "max_water_depth": 0
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:matching_block_tag",
+        "tag": "sizeable_foliage:foliage_ground",
+        "offset": [
+          0,
+          -1,
+          0
+        ]
+      }
     }
   ]
 }

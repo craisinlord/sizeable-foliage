@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,6 +29,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -58,6 +61,18 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return state.getValue(AGE) == 0 ? SMALL_SHAPE : Shapes.block();
+    }
+
+    @Override
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        applySlowdown(state, entity);
+        super.entityInside(state, level, pos, entity);
+    }
+
+    public static void applySlowdown(BlockState state, Entity entity) {
+        if (entity instanceof LivingEntity) {
+            entity.makeStuckInBlock(state, new Vec3(0.8, 0.75, 0.8));
+        }
     }
 
     public static List<BlockPos> partPositions(BlockState state, BlockPos origin) {
@@ -179,7 +194,8 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             if (owned.contains(pos)) {
                 continue;
             }
-            if (!level.getBlockState(pos).canBeReplaced()) {
+            BlockState state = level.getBlockState(pos);
+            if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
                 return false;
             }
         }

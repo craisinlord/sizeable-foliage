@@ -2,6 +2,8 @@ package com.craisinlord.sizeablefoliage.content.client;
 
 import com.craisinlord.sizeablefoliage.content.block.BigBushBlock;
 import com.craisinlord.sizeablefoliage.content.block.BigBushPartBlock;
+import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushBlock;
+import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushPartBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -49,6 +51,15 @@ public final class BigBushRenderHelper {
         } else if (state.getBlock() instanceof BigBushBlock && state.getValue(BigBushBlock.AGE) > 0) {
             origin = pos;
             originState = state;
+        } else if (state.getBlock() instanceof BigSweetBerryBushPartBlock) {
+            origin = BigSweetBerryBushPartBlock.findOrigin(level, pos);
+            if (origin == null) {
+                return null;
+            }
+            originState = level.getBlockState(origin);
+            return twoByTwoVolume(origin, originState.getValue(BigSweetBerryBushBlock.FACING));
+        } else if (state.getBlock() instanceof BigSweetBerryBushBlock) {
+            return twoByTwoVolume(pos, state.getValue(BigSweetBerryBushBlock.FACING));
         } else {
             return null;
         }
@@ -58,15 +69,18 @@ public final class BigBushRenderHelper {
             return new BushVolume(center, 1.5);
         }
         if (age == 1) {
-            Direction forward = originState.getValue(BigBushBlock.FACING);
-            Direction side = forward.getClockWise();
-            Vec3 center = new Vec3(
-                    origin.getX() + 0.5 + 0.5 * forward.getStepX() + 0.5 * side.getStepX(),
-                    origin.getY() + 1.0,
-                    origin.getZ() + 0.5 + 0.5 * forward.getStepZ() + 0.5 * side.getStepZ()
-            );
-            return new BushVolume(center, 1.0);
+            return twoByTwoVolume(origin, originState.getValue(BigBushBlock.FACING));
         }
         return null;
+    }
+
+    private static BushVolume twoByTwoVolume(BlockPos origin, Direction forward) {
+        Direction side = forward.getClockWise();
+        Vec3 center = new Vec3(
+                origin.getX() + 0.5 + 0.5 * forward.getStepX() + 0.5 * side.getStepX(),
+                origin.getY() + 1.0,
+                origin.getZ() + 0.5 + 0.5 * forward.getStepZ() + 0.5 * side.getStepZ()
+        );
+        return new BushVolume(center, 1.0);
     }
 }

@@ -3,6 +3,7 @@ package com.craisinlord.sizeablefoliage.neoforge.registry;
 import com.craisinlord.sizeablefoliage.Constants;
 import com.craisinlord.sizeablefoliage.registry.ModFeatures;
 import com.craisinlord.sizeablefoliage.worldgen.BigBushWorldgenFeature;
+import com.craisinlord.sizeablefoliage.worldgen.BigSweetBerryBushWorldgenFeature;
 import com.craisinlord.sizeablefoliage.worldgen.VeryTallGrassFeature;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -18,6 +19,8 @@ public final class NeoForgeModFeatures {
             FEATURES.register("big_bush_2x2", ModFeatures::createBigBush2x2Feature);
     public static final DeferredHolder<net.minecraft.world.level.levelgen.feature.Feature<?>, BigBushWorldgenFeature> BIG_BUSH_3X3 =
             FEATURES.register("big_bush_3x3", ModFeatures::createBigBush3x3Feature);
+    public static final DeferredHolder<net.minecraft.world.level.levelgen.feature.Feature<?>, BigSweetBerryBushWorldgenFeature> BIG_SWEET_BERRY_BUSH =
+            FEATURES.register("big_sweet_berry_bush", ModFeatures::createBigSweetBerryBushFeature);
 
     private NeoForgeModFeatures() {
     }

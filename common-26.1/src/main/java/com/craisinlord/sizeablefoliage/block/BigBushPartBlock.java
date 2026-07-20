@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,12 +28,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Invisible filler block for the grown {@link BigBushBlock} footprint. Breaking a
- * part destroys the whole bush (drops come from the origin's loot table). The one
- * part directly two above the origin of a stage-3 bush renders the top slice of
- * the oversized cross model
- */
 public class BigBushPartBlock extends Block implements BonemealableBlock {
     public static final MapCodec<BigBushPartBlock> CODEC = Block.simpleCodec(BigBushPartBlock::new);
 
@@ -57,7 +53,12 @@ public class BigBushPartBlock extends Block implements BonemealableBlock {
         return Shapes.block();
     }
 
-    /** Finds the origin bush this part belongs to, or null if orphaned. */
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
+        BigBushBlock.applySlowdown(state, entity);
+        super.entityInside(state, level, pos, entity, effectApplier, isPrecise);
+    }
+
     @Nullable
     public static BlockPos findOrigin(LevelReader level, BlockPos partPos) {
         for (int dx = -1; dx <= 1; dx++) {
@@ -130,7 +131,6 @@ public class BigBushPartBlock extends Block implements BonemealableBlock {
         }
     }
 
-    /** Bonemeal applied to any part of a growing bush grows the whole thing, same as clicking the origin. */
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
         BlockPos origin = findOrigin(level, pos);
@@ -174,10 +174,6 @@ public class BigBushPartBlock extends Block implements BonemealableBlock {
 
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
-        BlockPos origin = findOrigin(level, pos);
-        if (origin != null) {
-            return new ItemStack(level.getBlockState(origin).getBlock());
-        }
-        return ItemStack.EMPTY;
+        return new ItemStack(net.minecraft.world.level.block.Blocks.BUSH);
     }
 }

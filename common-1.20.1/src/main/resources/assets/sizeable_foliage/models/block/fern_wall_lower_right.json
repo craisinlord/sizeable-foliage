@@ -1,0 +1,99 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "sizeable_foliage:block/fern_wall/fern_wall_bottom_right",
+    "cross": "sizeable_foliage:block/fern_wall/fern_wall_bottom_right"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.136,
+        0,
+        8
+      ],
+      "to": [
+        16.136,
+        16,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#cross",
+          "tintindex": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#cross",
+          "tintindex": 0
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        0,
+        -0.136
+      ],
+      "to": [
+        8,
+        16,
+        16.136
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45,
+        "rescale": true
+      },
+      "shade": false,
+      "faces": {
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#cross",
+          "tintindex": 0
+        },
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#cross",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

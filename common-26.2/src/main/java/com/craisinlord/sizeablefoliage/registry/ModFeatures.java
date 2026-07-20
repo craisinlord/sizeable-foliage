@@ -1,6 +1,7 @@
 package com.craisinlord.sizeablefoliage.registry;
 
 import com.craisinlord.sizeablefoliage.worldgen.BigBushWorldgenFeature;
+import com.craisinlord.sizeablefoliage.worldgen.BigSweetBerryBushWorldgenFeature;
 import com.craisinlord.sizeablefoliage.worldgen.VeryTallGrassFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
@@ -19,5 +20,9 @@ public final class ModFeatures {
 
     public static BigBushWorldgenFeature createBigBush3x3Feature() {
         return new BigBushWorldgenFeature(NoneFeatureConfiguration.CODEC, 2);
+    }
+
+    public static BigSweetBerryBushWorldgenFeature createBigSweetBerryBushFeature() {
+        return new BigSweetBerryBushWorldgenFeature(NoneFeatureConfiguration.CODEC);
     }
 }

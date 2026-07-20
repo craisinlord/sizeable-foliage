@@ -1,0 +1,88 @@
+{
+  "variants": {
+    "part=lower,connection=single,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_lower_single"
+    },
+    "part=lower,connection=single,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_lower_single",
+      "y": 90
+    },
+    "part=lower,connection=left,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_lower_left"
+    },
+    "part=lower,connection=left,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_lower_left",
+      "y": 90
+    },
+    "part=lower,connection=right,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_lower_right"
+    },
+    "part=lower,connection=right,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_lower_right",
+      "y": 90
+    },
+    "part=lower,connection=both,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_lower_both"
+    },
+    "part=lower,connection=both,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_lower_both",
+      "y": 90
+    },
+    "part=middle,connection=single,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_middle_single"
+    },
+    "part=middle,connection=single,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_middle_single",
+      "y": 90
+    },
+    "part=middle,connection=left,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_middle_left"
+    },
+    "part=middle,connection=left,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_middle_left",
+      "y": 90
+    },
+    "part=middle,connection=right,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_middle_right"
+    },
+    "part=middle,connection=right,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_middle_right",
+      "y": 90
+    },
+    "part=middle,connection=both,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_middle_both"
+    },
+    "part=middle,connection=both,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_middle_both",
+      "y": 90
+    },
+    "part=upper,connection=single,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_upper_single"
+    },
+    "part=upper,connection=single,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_upper_single",
+      "y": 90
+    },
+    "part=upper,connection=left,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_upper_left"
+    },
+    "part=upper,connection=left,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_upper_left",
+      "y": 90
+    },
+    "part=upper,connection=right,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_upper_right"
+    },
+    "part=upper,connection=right,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_upper_right",
+      "y": 90
+    },
+    "part=upper,connection=both,rotated=false": {
+      "model": "sizeable_foliage:block/fern_wall_upper_both"
+    },
+    "part=upper,connection=both,rotated=true": {
+      "model": "sizeable_foliage:block/fern_wall_upper_both",
+      "y": 90
+    }
+  }
+}

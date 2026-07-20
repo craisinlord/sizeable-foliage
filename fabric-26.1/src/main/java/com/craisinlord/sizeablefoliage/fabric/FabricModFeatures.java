@@ -3,6 +3,7 @@ package com.craisinlord.sizeablefoliage.fabric;
 import com.craisinlord.sizeablefoliage.Constants;
 import com.craisinlord.sizeablefoliage.registry.ModFeatures;
 import com.craisinlord.sizeablefoliage.worldgen.BigBushWorldgenFeature;
+import com.craisinlord.sizeablefoliage.worldgen.BigSweetBerryBushWorldgenFeature;
 import com.craisinlord.sizeablefoliage.worldgen.VeryTallGrassFeature;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,6 +14,7 @@ public final class FabricModFeatures {
     public static final VeryTallGrassFeature VERY_TALL_GRASS = register("very_tall_grass", ModFeatures.createVeryTallGrassFeature());
     public static final BigBushWorldgenFeature BIG_BUSH_2X2 = register("big_bush_2x2", ModFeatures.createBigBush2x2Feature());
     public static final BigBushWorldgenFeature BIG_BUSH_3X3 = register("big_bush_3x3", ModFeatures.createBigBush3x3Feature());
+    public static final BigSweetBerryBushWorldgenFeature BIG_SWEET_BERRY_BUSH = register("big_sweet_berry_bush", ModFeatures.createBigSweetBerryBushFeature());
 
     private FabricModFeatures() {
     }
