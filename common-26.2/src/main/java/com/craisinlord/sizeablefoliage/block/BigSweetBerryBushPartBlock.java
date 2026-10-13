@@ -155,6 +155,9 @@ public class BigSweetBerryBushPartBlock extends Block implements BonemealableBlo
             if (stack.is(Items.SHEARS) && BigSweetBerryBushBlock.shear(level, origin, originState, player)) {
                 return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             }
+            if (stack.is(Items.SHEARS) && BigSweetBerryBushBlock.downsize(level, origin, originState, player, stack, hand)) {
+                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+            }
             if (stack.is(Items.BONE_MEAL) && isValidBonemealTarget(level, pos, state) && !level.isClientSide()) {
                 performBonemeal((ServerLevel) level, level.getRandom(), pos, state);
                 if (!player.getAbilities().instabuild) {

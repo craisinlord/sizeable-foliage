@@ -27,7 +27,8 @@ public final class ForgeModClient {
                 ForgeModBlocks.BIG_BUSH_PART.get(),
                 ForgeModBlocks.VERY_SHORT_GRASS.get(),
                 ForgeModBlocks.VERY_TALL_GRASS.get(),
-                ForgeModBlocks.FERN_WALL.get()
+                ForgeModBlocks.FERN_WALL.get(),
+                ForgeModBlocks.VERY_LARGE_FERN.get()
         );
     }
 
@@ -38,7 +39,8 @@ public final class ForgeModClient {
                 ForgeModBlocks.BIG_BUSH_ITEM.get(),
                 ForgeModBlocks.VERY_SHORT_GRASS_ITEM.get(),
                 ForgeModBlocks.VERY_TALL_GRASS_ITEM.get(),
-                ForgeModBlocks.FERN_WALL_ITEM.get()
+                ForgeModBlocks.FERN_WALL_ITEM.get(),
+                ForgeModBlocks.VERY_LARGE_FERN_ITEM.get()
         );
     }
 
@@ -51,6 +53,7 @@ public final class ForgeModClient {
             ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.VERY_SHORT_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.VERY_TALL_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.FERN_WALL.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.VERY_LARGE_FERN.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.BIG_SWEET_BERRY_BUSH.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ForgeModBlocks.BIG_SWEET_BERRY_BUSH_PART.get(), RenderType.cutout());
         });

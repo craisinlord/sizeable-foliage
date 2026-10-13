@@ -7,6 +7,7 @@ import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushBlock;
 import com.craisinlord.sizeablefoliage.content.block.BigSweetBerryBushPartBlock;
 import com.craisinlord.sizeablefoliage.content.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.content.block.TorchflowerBushBlock;
+import com.craisinlord.sizeablefoliage.content.block.VeryLargeFernBlock;
 import com.craisinlord.sizeablefoliage.content.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.content.block.VeryTallGrassBlock;
 import com.craisinlord.sizeablefoliage.content.item.BigBushBlockItem;
@@ -29,6 +30,7 @@ public final class NeoForgeModBlocks {
     public static final DeferredBlock<BigSweetBerryBushBlock> BIG_SWEET_BERRY_BUSH = BLOCKS.register("big_sweet_berry_bush", ModBlocks::createBigSweetBerryBush);
     public static final DeferredBlock<BigSweetBerryBushPartBlock> BIG_SWEET_BERRY_BUSH_PART = BLOCKS.register("big_sweet_berry_bush_part", ModBlocks::createBigSweetBerryBushPart);
     public static final DeferredBlock<FernWallBlock> FERN_WALL = BLOCKS.register("fern_wall", ModBlocks::createFernWall);
+    public static final DeferredBlock<VeryLargeFernBlock> VERY_LARGE_FERN = BLOCKS.register("very_large_fern", ModBlocks::createVeryLargeFern);
 
     public static final DeferredItem<BlockItem> BIG_BUSH_ITEM = ITEMS.register("big_bush",
             () -> new BigBushBlockItem(BIG_BUSH.get(), new Item.Properties()));
@@ -38,6 +40,7 @@ public final class NeoForgeModBlocks {
     public static final DeferredItem<BlockItem> SWEET_BERRY_SEEDS_ITEM = ITEMS.register("sweet_berry_seeds",
             () -> new BlockItem(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new Item.Properties()));
     public static final DeferredItem<BlockItem> FERN_WALL_ITEM = ITEMS.registerSimpleBlockItem(FERN_WALL);
+    public static final DeferredItem<BlockItem> VERY_LARGE_FERN_ITEM = ITEMS.registerSimpleBlockItem(VERY_LARGE_FERN);
 
     private NeoForgeModBlocks() {
     }

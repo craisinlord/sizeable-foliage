@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:jungle",
+    { "id": "#c:is_jungle", "required": false }
+  ]
+}

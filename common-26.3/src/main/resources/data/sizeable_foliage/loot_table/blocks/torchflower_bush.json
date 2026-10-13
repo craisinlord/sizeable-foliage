@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "sizeable_foliage:torchflower_bush",
+            "state": {
+              "half": "lower"
+            }
+          },
+          "name": "sizeable_foliage:torchflower_bush"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "sizeable_foliage:blocks/torchflower_bush"
+}

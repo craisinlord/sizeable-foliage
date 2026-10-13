@@ -31,7 +31,8 @@ public final class NeoForgeModClient {
                 NeoForgeModBlocks.BIG_BUSH_PART.get(),
                 NeoForgeModBlocks.VERY_SHORT_GRASS.get(),
                 NeoForgeModBlocks.VERY_TALL_GRASS.get(),
-                NeoForgeModBlocks.FERN_WALL.get()
+                NeoForgeModBlocks.FERN_WALL.get(),
+                NeoForgeModBlocks.VERY_LARGE_FERN.get()
         );
     }
 }

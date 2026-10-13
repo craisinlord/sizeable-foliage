@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:fern",
+    "minecraft:large_fern",
+    "sizeable_foliage:very_large_fern"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "sizeable_foliage:block/torchflower_bush_bottom"
+    },
+    "half=upper": {
+      "model": "sizeable_foliage:block/torchflower_bush_top"
+    }
+  }
+}

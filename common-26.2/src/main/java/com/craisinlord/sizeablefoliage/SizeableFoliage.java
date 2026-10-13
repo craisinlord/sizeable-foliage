@@ -8,6 +8,7 @@ public final class SizeableFoliage {
         Constants.LOGGER.info("{} {} initializing on {}", Constants.MOD_NAME,
             PlatformHelper.getInstance().getModVersion(),
             PlatformHelper.getInstance().getPlatformName());
+        SizeableFoliageConfig.load();
     }
 
     private SizeableFoliage() {

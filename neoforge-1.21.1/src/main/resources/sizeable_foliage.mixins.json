@@ -9,7 +9,11 @@
     "TorchflowerBlockStateMixin",
     "BlockItemSweetBerriesMixin",
     "BoneMealItemSweetBerryBushMergeMixin",
-    "BoneMealItemFernWallMixin"
+    "BoneMealItemFernWallMixin",
+    "ShearsPlantMixin",
+    "VineGrowthStuntMixin",
+    "SaplingGrowthStuntMixin",
+    "SugarCaneNoWaterMixin"
   ],
   "client": [
     "client.BlockRenderDispatcherBigBushMixin",

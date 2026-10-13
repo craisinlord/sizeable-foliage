@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": "minecraft:tool/can_shear",
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:bush",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "sizeable_foliage:big_bush",
+                "state": {
+                  "age": "2"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 3
+              }
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:bush",
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": 2
+              }
+            }
+          ]
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "sizeable_foliage:blocks/big_bush"
+}

@@ -10,9 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.InsideBlockEffectApplier;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,11 +28,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,18 +64,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Shapes.block();
-    }
-
-    @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
-        applySlowdown(state, entity);
-        super.entityInside(state, level, pos, entity, effectApplier, isPrecise);
-    }
-
-    public static void applySlowdown(BlockState state, Entity entity) {
-        if (entity instanceof LivingEntity) {
-            entity.makeStuckInBlock(state, new Vec3(0.8, 0.75, 0.8));
-        }
     }
 
     @Override
@@ -159,45 +142,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "big_bush_part"));
     }
 
-    private record GrowthTarget(BlockPos origin, BlockState state) {}
-
-    @Nullable
-    private GrowthTarget findGrowthTarget(LevelReader level, BlockPos pos, BlockState state, RandomSource random) {
-        int age = state.getValue(AGE);
-        if (age == 1) {
-            Direction forward = state.getValue(FACING);
-            Direction side = forward.getClockWise();
-            Set<BlockPos> owned = new HashSet<>(partPositions(state, pos));
-            owned.add(pos);
-            BlockState grown = state.setValue(AGE, 2);
-            for (BlockPos candidate : new BlockPos[]{
-                    pos, pos.relative(forward).relative(side), pos.relative(forward), pos.relative(side)}) {
-                if (canGrowTo(level, candidate, grown, owned)) {
-                    return new GrowthTarget(candidate, grown);
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean canGrowTo(LevelReader level, BlockPos newOrigin, BlockState grownState, Set<BlockPos> owned) {
-        if (!hasFullSupport(grownState, level, newOrigin)) {
-            return false;
-        }
-        List<BlockPos> positions = new ArrayList<>(partPositions(grownState, newOrigin));
-        positions.add(newOrigin);
-        for (BlockPos pos : positions) {
-            if (owned.contains(pos)) {
-                continue;
-            }
-            BlockState state = level.getBlockState(pos);
-            if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static void placeBushBlocks(LevelAccessor level, BlockPos origin, BlockState grownState, int flags) {
         level.setBlock(origin, grownState, flags);
         Block part = partBlock();
@@ -206,10 +150,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             level.setBlock(pos, part.defaultBlockState()
                     .setValue(BigBushPartBlock.CAP, pos.equals(capPos)), flags);
         }
-    }
-
-    private void placeStage(ServerLevel level, BlockPos origin, BlockState grownState) {
-        placeBushBlocks(level, origin, grownState, 3);
     }
 
     @Override
@@ -222,31 +162,55 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }
 
+    /** Big Bush no longer grows via its own bone meal target - growth only happens by merging a grid of small bushes. */
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-        return state.getValue(AGE) < 2;
+        return false;
     }
 
     @Override
     public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
-        return findGrowthTarget(level, pos, state, random) != null;
+        return false;
     }
 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-        GrowthTarget target = findGrowthTarget(level, pos, state, random);
-        if (target == null) {
-            return;
+    }
+
+    /** Shears shrink a bush by one stage: 3x3 to 2x2, or 2x2 back down to a single vanilla Bush. */
+    public static boolean shear(Level level, BlockPos originPos, BlockState originState, Player player, ItemStack shears, InteractionHand hand) {
+        if (!(originState.getBlock() instanceof BigBushBlock) || level.isClientSide()) {
+            return false;
         }
-        if (!target.origin().equals(pos)) {
-            level.removeBlock(pos, false);
+        int age = originState.getValue(AGE);
+        if (age == 2) {
+            BlockState shrunk = originState.setValue(AGE, 1);
+            Set<BlockPos> keep = new HashSet<>(partPositions(shrunk, originPos));
+            keep.add(originPos);
+            for (BlockPos partPos : partPositions(originState, originPos)) {
+                if (!keep.contains(partPos)) {
+                    level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 35);
+                }
+            }
+            placeBushBlocks(level, originPos, shrunk, 3);
+            level.levelEvent(1505, originPos, 15);
+            shears.hurtAndBreak(1, player, hand);
+            return true;
         }
-        placeStage(level, target.origin(), target.state());
-        level.levelEvent(1505, target.origin(), 15);
+        if (age == 1) {
+            for (BlockPos partPos : partPositions(originState, originPos)) {
+                level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 35);
+            }
+            level.setBlock(originPos, Blocks.BUSH.defaultBlockState(), 3);
+            level.levelEvent(1505, originPos, 15);
+            shears.hurtAndBreak(1, player, hand);
+            return true;
+        }
+        return false;
     }
 
     public static boolean grantBonemealBonus(Level level, BlockPos originPos, BlockState originState, Player player, ItemStack stack) {
-        if (!(originState.getBlock() instanceof BigBushBlock bigBush) || originState.getValue(AGE) != 2) {
+        if (!(originState.getBlock() instanceof BigBushBlock bigBush)) {
             return false;
         }
         if (!level.isClientSide()) {
@@ -269,6 +233,9 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             InteractionHand hand,
             BlockHitResult hitResult
     ) {
+        if (stack.is(Items.SHEARS) && shear(level, pos, state, player, stack, hand)) {
+            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+        }
         if (stack.is(Items.BONE_MEAL) && grantBonemealBonus(level, pos, state, player, stack)) {
             return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         }

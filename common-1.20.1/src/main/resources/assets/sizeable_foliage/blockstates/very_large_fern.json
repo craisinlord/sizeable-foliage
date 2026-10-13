@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "part=lower": {
+      "model": "sizeable_foliage:block/very_large_fern_lower"
+    },
+    "part=middle": {
+      "model": "sizeable_foliage:block/very_large_fern_middle"
+    },
+    "part=upper": {
+      "model": "sizeable_foliage:block/very_large_fern_upper"
+    }
+  }
+}

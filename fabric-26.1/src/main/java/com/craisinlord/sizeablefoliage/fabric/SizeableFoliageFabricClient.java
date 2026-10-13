@@ -23,7 +23,8 @@ public class SizeableFoliageFabricClient implements ClientModInitializer {
                 FabricModBlocks.BIG_BUSH_PART,
                 FabricModBlocks.VERY_SHORT_GRASS,
                 FabricModBlocks.VERY_TALL_GRASS,
-                FabricModBlocks.FERN_WALL
+                FabricModBlocks.FERN_WALL,
+                FabricModBlocks.VERY_LARGE_FERN
         );
 
         ClientTickEvents.END_CLIENT_TICK.register(BigBushCameraHider::update);

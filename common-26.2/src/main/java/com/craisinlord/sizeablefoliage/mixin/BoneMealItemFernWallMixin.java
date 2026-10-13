@@ -1,7 +1,7 @@
 package com.craisinlord.sizeablefoliage.mixin;
 
 import com.craisinlord.sizeablefoliage.Constants;
-import com.craisinlord.sizeablefoliage.block.FernWallBlock;
+import com.craisinlord.sizeablefoliage.block.VeryLargeFernBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -41,19 +41,19 @@ public abstract class BoneMealItemFernWallMixin {
             return;
         }
 
-        Block block = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "fern_wall"));
-        if (!(block instanceof FernWallBlock)) {
+        Block block = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "very_large_fern"));
+        if (!(block instanceof VeryLargeFernBlock)) {
             return;
         }
 
-        BlockState fernWallState = block.defaultBlockState();
+        BlockState veryLargeFernState = block.defaultBlockState();
         if (!level.getBlockState(basePos.above(2)).canBeReplaced()
-                || !fernWallState.canSurvive(level, basePos)) {
+                || !veryLargeFernState.canSurvive(level, basePos)) {
             return;
         }
 
         if (!level.isClientSide()) {
-            FernWallBlock.placeAt(level, basePos, Block.UPDATE_ALL);
+            VeryLargeFernBlock.placeAt(level, basePos, Block.UPDATE_ALL);
             if (context.getPlayer() == null || !context.getPlayer().getAbilities().instabuild) {
                 ItemStack stack = context.getItemInHand();
                 stack.shrink(1);

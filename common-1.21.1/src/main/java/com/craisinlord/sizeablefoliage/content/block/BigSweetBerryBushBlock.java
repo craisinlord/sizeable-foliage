@@ -217,6 +217,22 @@ public class BigSweetBerryBushBlock extends BushBlock implements BonemealableBlo
         return true;
     }
 
+    /** Shearing an already-sheared bush (nothing left to harvest) breaks it back down into 4 vanilla sweet berry bushes. */
+    public static boolean downsize(Level level, BlockPos origin, BlockState originState, Player player, ItemStack shears, InteractionHand hand) {
+        if (!(originState.getBlock() instanceof BigSweetBerryBushBlock) || !originState.getValue(SHEARED) || level.isClientSide) {
+            return false;
+        }
+        for (BlockPos partPos : partPositions(originState, origin)) {
+            level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 35);
+        }
+        for (BlockPos column : supportColumns(originState, origin)) {
+            level.setBlock(column, Blocks.SWEET_BERRY_BUSH.defaultBlockState().setValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE, 3), 3);
+        }
+        level.playSound(null, origin, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+        shears.hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
+        return true;
+    }
+
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
         return !state.getValue(SHEARED) && state.getValue(BERRY_STAGE) < MAX_BERRY_STAGE;
@@ -246,6 +262,9 @@ public class BigSweetBerryBushBlock extends BushBlock implements BonemealableBlo
             BlockHitResult hitResult
     ) {
         if (stack.is(Items.SHEARS) && shear(level, pos, state, player)) {
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (stack.is(Items.SHEARS) && downsize(level, pos, state, player, stack, hand)) {
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
         if (stack.is(Items.BONE_MEAL) && isValidBonemealTarget(level, pos, state)) {

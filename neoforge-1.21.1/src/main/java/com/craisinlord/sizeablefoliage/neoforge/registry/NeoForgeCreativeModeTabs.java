@@ -21,6 +21,7 @@ public final class NeoForgeCreativeModeTabs {
             event.accept(NeoForgeModBlocks.VERY_TALL_GRASS_ITEM.get());
             event.accept(NeoForgeModBlocks.SWEET_BERRY_SEEDS_ITEM.get());
             event.accept(NeoForgeModBlocks.FERN_WALL_ITEM.get());
+            event.accept(NeoForgeModBlocks.VERY_LARGE_FERN_ITEM.get());
         }
     }
 }

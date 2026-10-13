@@ -10,7 +10,11 @@
     "BlockItemSweetBerriesMixin",
     "BoneMealItemSweetBerryBushMergeMixin",
     "BoneMealItemFernWallMixin",
-    "BoneMealItemBigBushMergeMixin"
+    "BoneMealItemBigBushMergeMixin",
+    "ShearsPlantMixin",
+    "VineGrowthStuntMixin",
+    "SaplingGrowthStuntMixin",
+    "SugarCaneNoWaterMixin"
   ],
   "injectors": {
     "defaultRequire": 1

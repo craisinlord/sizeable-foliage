@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.craisinlord.sizeablefoliage.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "BoneMealItemVeryTallGrassMixin",
+    "BoneMealItemTorchflowerBushMixin",
+    "TorchflowerBlockStateMixin",
+    "BlockItemSweetBerriesMixin",
+    "BoneMealItemSweetBerryBushMergeMixin",
+    "BoneMealItemFernWallMixin",
+    "BoneMealItemBigBushMergeMixin",
+    "ShearsPlantMixin",
+    "VineGrowthStuntMixin",
+    "SaplingGrowthStuntMixin",
+    "SugarCaneNoWaterMixin"
+  ],
+  "client": [
+    "client.LivingEntityRendererBigBushMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

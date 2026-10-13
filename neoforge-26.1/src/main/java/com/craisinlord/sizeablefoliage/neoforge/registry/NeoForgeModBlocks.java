@@ -7,6 +7,7 @@ import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushBlock;
 import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushPartBlock;
 import com.craisinlord.sizeablefoliage.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.block.TorchflowerBushBlock;
+import com.craisinlord.sizeablefoliage.block.VeryLargeFernBlock;
 import com.craisinlord.sizeablefoliage.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.block.VeryTallGrassBlock;
 import com.craisinlord.sizeablefoliage.registry.ModBlocks;
@@ -38,6 +39,8 @@ public final class NeoForgeModBlocks {
             id -> ModBlocks.createBigSweetBerryBushPart(ResourceKey.create(Registries.BLOCK, id)));
     public static final DeferredBlock<FernWallBlock> FERN_WALL = BLOCKS.register("fern_wall",
             id -> ModBlocks.createFernWall(ResourceKey.create(Registries.BLOCK, id)));
+    public static final DeferredBlock<VeryLargeFernBlock> VERY_LARGE_FERN = BLOCKS.register("very_large_fern",
+            id -> ModBlocks.createVeryLargeFern(ResourceKey.create(Registries.BLOCK, id)));
 
     public static final DeferredItem<BlockItem> TORCHFLOWER_BUSH_ITEM = ITEMS.register("torchflower_bush",
             id -> new BlockItem(TORCHFLOWER_BUSH.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
@@ -49,6 +52,8 @@ public final class NeoForgeModBlocks {
             id -> new BlockItem(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
     public static final DeferredItem<BlockItem> FERN_WALL_ITEM = ITEMS.register("fern_wall",
             id -> new BlockItem(FERN_WALL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
+    public static final DeferredItem<BlockItem> VERY_LARGE_FERN_ITEM = ITEMS.register("very_large_fern",
+            id -> new BlockItem(VERY_LARGE_FERN.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
 
     private NeoForgeModBlocks() {
     }

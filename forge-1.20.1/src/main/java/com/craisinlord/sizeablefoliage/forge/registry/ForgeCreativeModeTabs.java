@@ -20,6 +20,7 @@ public final class ForgeCreativeModeTabs {
             event.accept(ForgeModBlocks.VERY_TALL_GRASS_ITEM.get());
             event.accept(ForgeModBlocks.SWEET_BERRY_SEEDS_ITEM.get());
             event.accept(ForgeModBlocks.FERN_WALL_ITEM.get());
+            event.accept(ForgeModBlocks.VERY_LARGE_FERN_ITEM.get());
         }
     }
 }

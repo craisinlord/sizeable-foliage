@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "sizeable_foliage:item/very_short_grass",
+    "tints": [
+      { "type": "minecraft:grass", "downfall": 1.0, "temperature": 0.5 }
+    ]
+  }
+}

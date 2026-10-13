@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#sizeable_foliage:big_sweet_berry_bush_spawn_biomes",
+  "features": ["sizeable_foliage:big_sweet_berry_bush"],
+  "step": "vegetal_decoration"
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "sizeable_foliage:very_large_fern"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "sizeable_foliage:blocks/very_large_fern"
+}

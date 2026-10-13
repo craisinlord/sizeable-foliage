@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "sizeable_foliage:block/very_large_fern/very_tall_fern_bottom"
+  }
+}

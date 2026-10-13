@@ -10,8 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,11 +28,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,18 +65,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return state.getValue(AGE) == 0 ? SMALL_SHAPE : Shapes.block();
-    }
-
-    @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        applySlowdown(state, entity);
-        super.entityInside(state, level, pos, entity);
-    }
-
-    public static void applySlowdown(BlockState state, Entity entity) {
-        if (entity instanceof LivingEntity) {
-            entity.makeStuckInBlock(state, new Vec3(0.8, 0.75, 0.8));
-        }
     }
 
     public static List<BlockPos> partPositions(BlockState state, BlockPos origin) {
@@ -157,59 +141,6 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         return BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "big_bush_part"));
     }
 
-    private record GrowthTarget(BlockPos origin, BlockState state) {}
-
-    @Nullable
-    private GrowthTarget findGrowthTarget(LevelReader level, BlockPos pos, BlockState state, RandomSource random) {
-        int age = state.getValue(AGE);
-        if (age == 0) {
-            List<Direction> facings = new ArrayList<>(Direction.Plane.HORIZONTAL.stream().toList());
-            for (int i = facings.size() - 1; i > 0; i--) {
-                Direction swap = facings.set(random.nextInt(i + 1), facings.get(i));
-                facings.set(i, swap);
-            }
-            for (Direction facing : facings) {
-                BlockState grown = state.setValue(AGE, 1).setValue(FACING, facing);
-                if (canGrowTo(level, pos, grown, Set.of(pos))) {
-                    return new GrowthTarget(pos, grown);
-                }
-            }
-            return null;
-        }
-        if (age == 1) {
-            Direction forward = state.getValue(FACING);
-            Direction side = forward.getClockWise();
-            Set<BlockPos> owned = new HashSet<>(partPositions(state, pos));
-            owned.add(pos);
-            BlockState grown = state.setValue(AGE, 2);
-            for (BlockPos candidate : new BlockPos[]{
-                    pos, pos.relative(forward).relative(side), pos.relative(forward), pos.relative(side)}) {
-                if (canGrowTo(level, candidate, grown, owned)) {
-                    return new GrowthTarget(candidate, grown);
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean canGrowTo(LevelReader level, BlockPos newOrigin, BlockState grownState, Set<BlockPos> owned) {
-        if (!hasFullSupport(grownState, level, newOrigin)) {
-            return false;
-        }
-        List<BlockPos> positions = new ArrayList<>(partPositions(grownState, newOrigin));
-        positions.add(newOrigin);
-        for (BlockPos pos : positions) {
-            if (owned.contains(pos)) {
-                continue;
-            }
-            BlockState state = level.getBlockState(pos);
-            if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static void placeBushBlocks(LevelAccessor level, BlockPos origin, BlockState grownState, int flags) {
         level.setBlock(origin, grownState, flags);
         Block part = partBlock();
@@ -220,8 +151,100 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         }
     }
 
-    private void placeStage(ServerLevel level, BlockPos origin, BlockState grownState) {
-        placeBushBlocks(level, origin, grownState, 3);
+    private static boolean isSmallBush(LevelReader level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return state.getBlock() instanceof BigBushBlock && state.getValue(AGE) == 0;
+    }
+
+    /** A complete 2x2 or 3x3 grid of small (age 0) bushes merges into a Big Bush; tries 3x3 (bigger variant) first. */
+    private static boolean mergeSmallBushes(Level level, BlockPos clickedPos, Player player, ItemStack stack) {
+        for (int ox = -1; ox <= 1; ox++) {
+            for (int oz = -1; oz <= 1; oz++) {
+                BlockPos origin = clickedPos.offset(-ox, 0, -oz);
+                BlockPos[] footprint = new BlockPos[9];
+                int i = 0;
+                boolean allSmall = true;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        BlockPos p = origin.offset(dx, 0, dz);
+                        footprint[i++] = p;
+                        if (!isSmallBush(level, p)) {
+                            allSmall = false;
+                        }
+                    }
+                }
+                if (!allSmall) {
+                    continue;
+                }
+                BlockState grown = level.getBlockState(origin).setValue(AGE, 2);
+                if (!hasFullSupport(grown, level, origin)) {
+                    continue;
+                }
+                boolean roomAbove = true;
+                for (BlockPos p : footprint) {
+                    if (!level.getBlockState(p.above()).canBeReplaced() || !level.getBlockState(p.above(2)).canBeReplaced()) {
+                        roomAbove = false;
+                        break;
+                    }
+                }
+                if (!roomAbove) {
+                    continue;
+                }
+
+                for (BlockPos p : footprint) {
+                    level.removeBlock(p, false);
+                }
+                placeBushBlocks(level, origin, grown, Block.UPDATE_ALL);
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
+                level.levelEvent(1505, origin, 15);
+                return true;
+            }
+        }
+
+        for (Direction forward : Direction.Plane.HORIZONTAL) {
+            Direction side = forward.getClockWise();
+            BlockPos origin = clickedPos;
+            BlockPos[] columns = new BlockPos[]{
+                    origin, origin.relative(forward), origin.relative(side), origin.relative(forward).relative(side)};
+
+            boolean allSmall = true;
+            for (BlockPos column : columns) {
+                if (!isSmallBush(level, column)) {
+                    allSmall = false;
+                    break;
+                }
+            }
+            if (!allSmall) {
+                continue;
+            }
+            BlockState grown = level.getBlockState(origin).setValue(AGE, 1).setValue(FACING, forward);
+            if (!hasFullSupport(grown, level, origin)) {
+                continue;
+            }
+            boolean roomAbove = true;
+            for (BlockPos column : columns) {
+                if (!level.getBlockState(column.above()).canBeReplaced()) {
+                    roomAbove = false;
+                    break;
+                }
+            }
+            if (!roomAbove) {
+                continue;
+            }
+
+            for (BlockPos column : columns) {
+                level.removeBlock(column, false);
+            }
+            placeBushBlocks(level, origin, grown, Block.UPDATE_ALL);
+            if (!player.getAbilities().instabuild) {
+                stack.shrink(1);
+            }
+            level.levelEvent(1505, origin, 15);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -236,32 +259,56 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
+    /** Big Bush no longer grows via its own bone meal target - growth only happens by merging a grid of small bushes. */
     @Override
     public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
-        return state.getValue(AGE) < 2;
+        return false;
     }
 
     @Override
     public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
-        return findGrowthTarget(level, pos, state, random) != null;
+        return false;
     }
 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-        GrowthTarget target = findGrowthTarget(level, pos, state, random);
-        if (target == null) {
-            return;
+    }
+
+    /** Shears shrink a bush by one stage: 3x3 to 2x2, or 2x2 back down to a single (age 0) bush. */
+    public static boolean shear(Level level, BlockPos originPos, BlockState originState, Player player, ItemStack shears, InteractionHand hand) {
+        if (!(originState.getBlock() instanceof BigBushBlock) || level.isClientSide) {
+            return false;
         }
-        if (!target.origin().equals(pos)) {
-            level.removeBlock(pos, false);
+        int age = originState.getValue(AGE);
+        if (age == 2) {
+            BlockState shrunk = originState.setValue(AGE, 1);
+            Set<BlockPos> keep = new HashSet<>(partPositions(shrunk, originPos));
+            keep.add(originPos);
+            for (BlockPos partPos : partPositions(originState, originPos)) {
+                if (!keep.contains(partPos)) {
+                    level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 35);
+                }
+            }
+            placeBushBlocks(level, originPos, shrunk, 3);
+            level.levelEvent(1505, originPos, 15);
+            shears.hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
+            return true;
         }
-        placeStage(level, target.origin(), target.state());
-        level.levelEvent(1505, target.origin(), 15);
+        if (age == 1) {
+            for (BlockPos partPos : partPositions(originState, originPos)) {
+                level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 35);
+            }
+            level.setBlock(originPos, originState.setValue(AGE, 0), 3);
+            level.levelEvent(1505, originPos, 15);
+            shears.hurtAndBreak(1, player, net.minecraft.world.entity.LivingEntity.getSlotForHand(hand));
+            return true;
+        }
+        return false;
     }
 
     /** Pops a bonus item when bone meal is used on a fully-grown (age 2) bush; shared with {@link BigBushPartBlock}. */
     public static boolean grantBonemealBonus(Level level, BlockPos originPos, BlockState originState, Player player, ItemStack stack) {
-        if (!(originState.getBlock() instanceof BigBushBlock bigBush) || originState.getValue(AGE) != 2) {
+        if (!(originState.getBlock() instanceof BigBushBlock bigBush)) {
             return false;
         }
         if (!level.isClientSide) {
@@ -284,8 +331,16 @@ public class BigBushBlock extends BushBlock implements BonemealableBlock {
             InteractionHand hand,
             BlockHitResult hitResult
     ) {
-        if (stack.is(Items.BONE_MEAL) && grantBonemealBonus(level, pos, state, player, stack)) {
+        if (stack.is(Items.SHEARS) && shear(level, pos, state, player, stack, hand)) {
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (stack.is(Items.BONE_MEAL) && !level.isClientSide) {
+            if (state.getValue(AGE) == 0 && mergeSmallBushes(level, pos, player, stack)) {
+                return ItemInteractionResult.sidedSuccess(false);
+            }
+            if (grantBonemealBonus(level, pos, state, player, stack)) {
+                return ItemInteractionResult.sidedSuccess(false);
+            }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }

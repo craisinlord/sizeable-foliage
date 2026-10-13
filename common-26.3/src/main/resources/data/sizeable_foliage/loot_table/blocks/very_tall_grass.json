@@ -1,0 +1,57 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": "minecraft:tool/can_shear",
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "sizeable_foliage:very_tall_grass",
+            "state": {
+              "part": "lower"
+            }
+          },
+          "name": "sizeable_foliage:very_tall_grass"
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:all_of",
+            "terms": [
+              {
+                "type": "minecraft:match_block",
+                "blocks": "sizeable_foliage:very_tall_grass",
+                "state": {
+                  "part": "lower"
+                }
+              },
+              {
+                "type": "minecraft:table_bonus",
+                "enchantment": "minecraft:fortune",
+                "chances": [
+                  0.125,
+                  0.14285715,
+                  0.16666667,
+                  0.2
+                ]
+              }
+            ]
+          },
+          "name": "minecraft:wheat_seeds",
+          "modifier": {
+            "type": "minecraft:explosion_decay"
+          }
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "sizeable_foliage:blocks/very_tall_grass"
+}

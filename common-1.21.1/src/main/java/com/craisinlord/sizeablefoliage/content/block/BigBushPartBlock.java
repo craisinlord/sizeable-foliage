@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -50,12 +49,6 @@ public class BigBushPartBlock extends Block implements BonemealableBlock {
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return Shapes.block();
-    }
-
-    @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        BigBushBlock.applySlowdown(state, entity);
-        super.entityInside(state, level, pos, entity);
     }
 
     @Nullable
@@ -157,9 +150,12 @@ public class BigBushPartBlock extends Block implements BonemealableBlock {
             InteractionHand hand,
             BlockHitResult hitResult
     ) {
-        if (stack.is(Items.BONE_MEAL)) {
-            BlockPos origin = findOrigin(level, pos);
-            if (origin != null && BigBushBlock.grantBonemealBonus(level, origin, level.getBlockState(origin), player, stack)) {
+        BlockPos origin = findOrigin(level, pos);
+        if (origin != null) {
+            if (stack.is(Items.SHEARS) && BigBushBlock.shear(level, origin, level.getBlockState(origin), player, stack, hand)) {
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            }
+            if (stack.is(Items.BONE_MEAL) && BigBushBlock.grantBonemealBonus(level, origin, level.getBlockState(origin), player, stack)) {
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }

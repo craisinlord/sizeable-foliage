@@ -7,6 +7,7 @@ import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushBlock;
 import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushPartBlock;
 import com.craisinlord.sizeablefoliage.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.block.TorchflowerBushBlock;
+import com.craisinlord.sizeablefoliage.block.VeryLargeFernBlock;
 import com.craisinlord.sizeablefoliage.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.block.VeryTallGrassBlock;
 import com.craisinlord.sizeablefoliage.registry.ModBlocks;
@@ -36,6 +37,7 @@ public final class FabricModBlocks {
     public static final BigSweetBerryBushBlock BIG_SWEET_BERRY_BUSH = registerBlock("big_sweet_berry_bush", ModBlocks::createBigSweetBerryBush);
     public static final BigSweetBerryBushPartBlock BIG_SWEET_BERRY_BUSH_PART = registerBlock("big_sweet_berry_bush_part", ModBlocks::createBigSweetBerryBushPart);
     public static final FernWallBlock FERN_WALL = registerBlock("fern_wall", ModBlocks::createFernWall);
+    public static final VeryLargeFernBlock VERY_LARGE_FERN = registerBlock("very_large_fern", ModBlocks::createVeryLargeFern);
 
     public static final BlockItem TORCHFLOWER_BUSH_ITEM = registerSimpleBlockItem("torchflower_bush", TORCHFLOWER_BUSH);
     public static final BlockItem VERY_SHORT_GRASS_ITEM = registerSimpleBlockItem("very_short_grass", VERY_SHORT_GRASS);
@@ -43,6 +45,7 @@ public final class FabricModBlocks {
     public static final BlockItem SWEET_BERRY_SEEDS_ITEM = registerItem("sweet_berry_seeds",
             key -> new BlockItem(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH, new Item.Properties().setId(key)));
     public static final BlockItem FERN_WALL_ITEM = registerSimpleBlockItem("fern_wall", FERN_WALL);
+    public static final BlockItem VERY_LARGE_FERN_ITEM = registerSimpleBlockItem("very_large_fern", VERY_LARGE_FERN);
 
     private FabricModBlocks() {
     }
@@ -54,6 +57,7 @@ public final class FabricModBlocks {
             output.accept(VERY_TALL_GRASS_ITEM);
             output.accept(SWEET_BERRY_SEEDS_ITEM);
             output.accept(FERN_WALL_ITEM);
+            output.accept(VERY_LARGE_FERN_ITEM);
         });
     }
 

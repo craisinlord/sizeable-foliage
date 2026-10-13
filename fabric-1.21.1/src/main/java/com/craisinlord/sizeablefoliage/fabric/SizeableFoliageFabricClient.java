@@ -20,14 +20,16 @@ public class SizeableFoliageFabricClient implements ClientModInitializer {
                 FabricModBlocks.BIG_BUSH_PART,
                 FabricModBlocks.VERY_SHORT_GRASS,
                 FabricModBlocks.VERY_TALL_GRASS,
-                FabricModBlocks.FERN_WALL
+                FabricModBlocks.FERN_WALL,
+                FabricModBlocks.VERY_LARGE_FERN
         );
         ColorProviderRegistry.ITEM.register(
                 (stack, tintIndex) -> GrassColor.getDefaultColor(),
                 FabricModBlocks.BIG_BUSH_ITEM,
                 FabricModBlocks.VERY_SHORT_GRASS_ITEM,
                 FabricModBlocks.VERY_TALL_GRASS_ITEM,
-                FabricModBlocks.FERN_WALL_ITEM
+                FabricModBlocks.FERN_WALL_ITEM,
+                FabricModBlocks.VERY_LARGE_FERN_ITEM
         );
 
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.BIG_BUSH, RenderType.cutout());
@@ -36,6 +38,7 @@ public class SizeableFoliageFabricClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.VERY_SHORT_GRASS, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.VERY_TALL_GRASS, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.FERN_WALL, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.VERY_LARGE_FERN, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.BIG_SWEET_BERRY_BUSH, RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FabricModBlocks.BIG_SWEET_BERRY_BUSH_PART, RenderType.cutout());
 

@@ -1,0 +1,54 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:sweet_berries",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "sizeable_foliage:big_sweet_berry_bush",
+                "state": {
+                  "berry_stage": "2"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": {
+                  "type": "minecraft:uniform",
+                  "min": 4,
+                  "max": 7
+                }
+              }
+            },
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:sweet_berries",
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "sizeable_foliage:big_sweet_berry_bush",
+                "state": {
+                  "berry_stage": "1"
+                }
+              },
+              "modifier": {
+                "type": "minecraft:set_count",
+                "count": {
+                  "type": "minecraft:uniform",
+                  "min": 1,
+                  "max": 2
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "sizeable_foliage:blocks/big_sweet_berry_bush"
+}

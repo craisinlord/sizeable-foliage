@@ -19,7 +19,7 @@ public final class AlphaVertexConsumerProxy {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 Object[] forwardedArgs = args;
-                if ("setColor".equals(method.getName()) && args != null && args.length == 4 && args[3] instanceof Integer alpha) {
+                if ("color".equals(method.getName()) && args != null && args.length == 4 && args[3] instanceof Integer alpha) {
                     forwardedArgs = args.clone();
                     forwardedArgs[3] = Math.max(0, Math.min(255, Math.round(alpha * alphaScale)));
                 }

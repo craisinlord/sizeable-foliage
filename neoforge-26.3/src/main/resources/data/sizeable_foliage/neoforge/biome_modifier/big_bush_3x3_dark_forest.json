@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#sizeable_foliage:big_bush_3x3_dark_forest_spawn_biomes",
+  "features": ["sizeable_foliage:big_bush_3x3_dark_forest"],
+  "step": "vegetal_decoration"
+}

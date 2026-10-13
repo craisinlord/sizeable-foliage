@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/tinted_cross",
+  "textures": {
+    "cross": "sizeable_foliage:block/very_large_fern/very_tall_fern_bottom"
+  }
+}

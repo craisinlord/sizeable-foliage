@@ -27,7 +27,8 @@ public final class NeoForgeModClient {
                 NeoForgeModBlocks.BIG_BUSH_PART.get(),
                 NeoForgeModBlocks.VERY_SHORT_GRASS.get(),
                 NeoForgeModBlocks.VERY_TALL_GRASS.get(),
-                NeoForgeModBlocks.FERN_WALL.get()
+                NeoForgeModBlocks.FERN_WALL.get(),
+                NeoForgeModBlocks.VERY_LARGE_FERN.get()
         );
     }
 
@@ -38,7 +39,8 @@ public final class NeoForgeModClient {
                 NeoForgeModBlocks.BIG_BUSH_ITEM.get(),
                 NeoForgeModBlocks.VERY_SHORT_GRASS_ITEM.get(),
                 NeoForgeModBlocks.VERY_TALL_GRASS_ITEM.get(),
-                NeoForgeModBlocks.FERN_WALL_ITEM.get()
+                NeoForgeModBlocks.FERN_WALL_ITEM.get(),
+                NeoForgeModBlocks.VERY_LARGE_FERN_ITEM.get()
         );
     }
 
@@ -51,6 +53,7 @@ public final class NeoForgeModClient {
             ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.VERY_SHORT_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.VERY_TALL_GRASS.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.FERN_WALL.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.VERY_LARGE_FERN.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.BIG_SWEET_BERRY_BUSH.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(NeoForgeModBlocks.BIG_SWEET_BERRY_BUSH_PART.get(), RenderType.cutout());
         });

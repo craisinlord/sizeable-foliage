@@ -1,11 +1,13 @@
 package com.craisinlord.sizeablefoliage.registry;
 
+import com.craisinlord.sizeablefoliage.SizeableFoliageConfig;
 import com.craisinlord.sizeablefoliage.block.BigBushBlock;
 import com.craisinlord.sizeablefoliage.block.BigBushPartBlock;
 import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushBlock;
 import com.craisinlord.sizeablefoliage.block.BigSweetBerryBushPartBlock;
 import com.craisinlord.sizeablefoliage.block.FernWallBlock;
 import com.craisinlord.sizeablefoliage.block.TorchflowerBushBlock;
+import com.craisinlord.sizeablefoliage.block.VeryLargeFernBlock;
 import com.craisinlord.sizeablefoliage.block.VeryShortGrassBlock;
 import com.craisinlord.sizeablefoliage.block.VeryTallGrassBlock;
 import net.minecraft.resources.ResourceKey;
@@ -46,7 +48,7 @@ public final class ModBlocks {
     public static TorchflowerBushBlock createTorchflowerBush(ResourceKey<Block> key) {
         return new TorchflowerBushBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.PEONY)
                 .setId(key)
-                .lightLevel(state -> 15));
+                .lightLevel(state -> SizeableFoliageConfig.torchflowerGlow ? 15 : 0));
     }
 
     public static VeryShortGrassBlock createVeryShortGrass(ResourceKey<Block> key) {
@@ -78,6 +80,12 @@ public final class ModBlocks {
 
     public static FernWallBlock createFernWall(ResourceKey<Block> key) {
         return new FernWallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LARGE_FERN)
+                .setId(key)
+                .offsetType(BlockBehaviour.OffsetType.NONE));
+    }
+
+    public static VeryLargeFernBlock createVeryLargeFern(ResourceKey<Block> key) {
+        return new VeryLargeFernBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LARGE_FERN)
                 .setId(key)
                 .offsetType(BlockBehaviour.OffsetType.NONE));
     }

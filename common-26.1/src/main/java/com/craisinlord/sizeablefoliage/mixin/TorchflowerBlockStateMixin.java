@@ -1,5 +1,6 @@
 package com.craisinlord.sizeablefoliage.mixin;
 
+import com.craisinlord.sizeablefoliage.SizeableFoliageConfig;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,7 +15,7 @@ public abstract class TorchflowerBlockStateMixin {
     @Inject(method = "getLightEmission", at = @At("HEAD"), cancellable = true)
     private void sizeableFoliage$makeTorchflowerGlow(CallbackInfoReturnable<Integer> cir) {
         BlockState state = (BlockState) (Object) this;
-        if (state.is(Blocks.TORCHFLOWER)) {
+        if (SizeableFoliageConfig.torchflowerGlow && state.is(Blocks.TORCHFLOWER)) {
             cir.setReturnValue(10);
         }
     }

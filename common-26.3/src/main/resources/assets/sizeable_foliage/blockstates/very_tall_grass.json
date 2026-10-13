@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "part=lower": { "model": "sizeable_foliage:block/very_tall_grass_bottom" },
+    "part=middle": { "model": "sizeable_foliage:block/very_tall_grass_middle" },
+    "part=upper": { "model": "sizeable_foliage:block/very_tall_grass_top" }
+  }
+}
